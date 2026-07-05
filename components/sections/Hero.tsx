@@ -8,18 +8,18 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
-import { ArrowDown } from "lucide-react";
 import { BRAND } from "@/lib/content";
 import { EASE_LUX, SPRING_SCROLL } from "@/lib/motion";
 import { useReducedMotionPref } from "@/hooks/useReducedMotionPref";
 import { useMouseParallax } from "@/hooks/useMouseParallax";
-import { GlassOrb } from "@/components/visual/Shapes";
+import { ScrollMouse } from "@/components/visual/ScrollMouse";
 import { Button } from "@/components/ui/button";
 
 /**
- * The overture. A floating glass orb centered over the brand mark; as the user
- * scrolls the camera flies *into* the orb (scale + blur + fade), handing off to
- * the first chapter. The orb responds subtly to the pointer.
+ * The overture. No hard object anymore — just the wordmark floating in light,
+ * with a soft indigo aura that follows the pointer. Type reveals line-by-line
+ * (an editorial clip-up), and as the user scrolls the camera eases forward
+ * (subtle scale + blur + fade), handing off to the first chapter.
  */
 export function Hero() {
   const ref = useRef<HTMLElement>(null);
@@ -32,23 +32,34 @@ export function Hero() {
   });
   const p = useSpring(scrollYProgress, SPRING_SCROLL);
 
-  // Dive-in: content scales up and dissolves; orb travels a touch further.
-  const contentScale = useTransform(p, [0, 0.6], [1, 1.35]);
-  const orbScale = useTransform(p, [0, 0.6], [1, 1.9]);
+  // Dive-in: content eases forward and dissolves.
+  const contentScale = useTransform(p, [0, 0.6], [1, 1.12]);
   const opacity = useTransform(p, [0, 0.5], [1, 0]);
-  const blurPx = useTransform(p, [0, 0.55], [0, 18]);
+  const blurPx = useTransform(p, [0, 0.55], [0, 14]);
   const blur = useMotionTemplate`blur(${blurPx}px)`;
   const cueOpacity = useTransform(p, [0, 0.12], [1, 0]);
 
-  // Pointer parallax on the orb.
-  const rotateX = useSpring(useTransform(my, [-0.5, 0.5], [10, -10]), SPRING_SCROLL);
-  const rotateY = useSpring(useTransform(mx, [-0.5, 0.5], [-14, 14]), SPRING_SCROLL);
-  const driftX = useTransform(mx, [-0.5, 0.5], [-18, 18]);
-  const driftY = useTransform(my, [-0.5, 0.5], [-12, 12]);
+  // Pointer-reactive aura (replaces the old orb) — drifts, never a hard shape.
+  const auraX = useTransform(mx, [-0.5, 0.5], ["-8%", "8%"]);
+  const auraY = useTransform(my, [-0.5, 0.5], ["-6%", "6%"]);
+  const auraScale = useSpring(useTransform(p, [0, 0.6], [1, 1.4]), SPRING_SCROLL);
+
+  const words = BRAND.heroHeadline.split(" ");
 
   return (
     <section id="hero" ref={ref} className="relative h-[150vh]">
       <div className="sticky top-0 flex h-screen w-full items-center justify-center overflow-hidden">
+        {/* soft indigo aura — the modern focal light, tracks the pointer */}
+        <motion.div
+          aria-hidden="true"
+          style={
+            reduced
+              ? { opacity: 0.5 }
+              : { x: auraX, y: auraY, scale: auraScale, opacity }
+          }
+          className="pointer-events-none absolute top-[42%] left-1/2 size-[70vw] max-w-[720px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(99,102,241,0.20),rgba(99,102,241,0.06)_45%,transparent_70%)] blur-[60px]"
+        />
+
         {/* soft alpine fog at the base */}
         <div
           aria-hidden="true"
@@ -57,43 +68,54 @@ export function Hero() {
 
         <motion.div
           style={reduced ? undefined : { scale: contentScale, opacity, filter: blur }}
-          className="relative flex flex-col items-center px-6 text-center"
+          className="relative z-10 flex flex-col items-center px-6 text-center"
         >
-          {/* Floating orb behind the wordmark */}
+          {/* kicker with a drawing-in hairline */}
           <motion.div
-            style={
-              reduced
-                ? undefined
-                : { scale: orbScale, x: driftX, y: driftY, rotateX, rotateY, transformPerspective: 1000 }
-            }
-            className="pointer-events-none absolute -top-[42%] left-1/2 -translate-x-1/2 [transform-style:preserve-3d]"
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.4, ease: EASE_LUX }}
+            className="mb-7 flex items-center gap-3"
           >
-            <GlassOrb className="w-[62vw] max-w-[440px] sm:w-[46vw]" />
+            <motion.span
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 1, delay: 0.7, ease: EASE_LUX }}
+              className="h-px w-8 origin-right bg-brand/50"
+            />
+            <span className="font-mono text-[11px] uppercase tracking-[0.5em] text-brand">
+              {BRAND.tagline}
+            </span>
+            <motion.span
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 1, delay: 0.7, ease: EASE_LUX }}
+              className="h-px w-8 origin-left bg-brand/50"
+            />
           </motion.div>
 
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.5, ease: EASE_LUX }}
-            className="relative z-10 mb-6 font-mono text-[11px] uppercase tracking-[0.5em] text-brand"
-          >
-            {BRAND.tagline}
-          </motion.p>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 26 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.1, delay: 0.65, ease: EASE_LUX }}
-            className="relative z-10 max-w-[16ch] font-serif text-5xl font-medium leading-[0.98] tracking-tight text-foreground sm:text-7xl lg:text-8xl"
-          >
-            {BRAND.heroHeadline}
-          </motion.h1>
+          {/* headline — editorial clip-up, word by word */}
+          <h1 className="max-w-[16ch] font-serif text-5xl font-medium leading-[0.98] tracking-tight text-foreground sm:text-7xl lg:text-8xl">
+            {words.map((word, i) => (
+              <span key={`${word}-${i}`} className="inline-block overflow-hidden pb-[0.08em] align-bottom">
+                <motion.span
+                  className="inline-block"
+                  initial={reduced ? undefined : { y: "110%" }}
+                  animate={reduced ? undefined : { y: "0%" }}
+                  transition={{ duration: 0.95, delay: 0.55 + i * 0.09, ease: EASE_LUX }}
+                >
+                  {word}
+                </motion.span>
+                {i < words.length - 1 && " "}
+              </span>
+            ))}
+          </h1>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.1, delay: 0.85, ease: EASE_LUX }}
-            className="relative z-10 mt-7 max-w-md text-base text-muted-foreground sm:text-lg"
+            transition={{ duration: 1.1, delay: 0.55 + words.length * 0.09 + 0.15, ease: EASE_LUX }}
+            className="mt-7 max-w-md text-base text-muted-foreground sm:text-lg"
           >
             {BRAND.heroSubtitle}
           </motion.p>
@@ -101,31 +123,28 @@ export function Hero() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.1, delay: 1.05, ease: EASE_LUX }}
-            className="relative z-10 mt-10"
+            transition={{ duration: 1.1, delay: 0.55 + words.length * 0.09 + 0.35, ease: EASE_LUX }}
+            className="mt-10"
           >
             <Button
               render={<a href="#about" />}
-              className="h-12 rounded-full bg-primary px-8 text-sm font-medium tracking-wide text-primary-foreground hover:bg-primary/85"
+              className="h-12 rounded-full bg-primary px-8 text-sm font-medium tracking-wide text-primary-foreground transition-all duration-300 hover:bg-primary/85 hover:shadow-[0_16px_40px_-16px_rgba(28,25,23,0.6)]"
             >
               {BRAND.heroCta}
             </Button>
           </motion.div>
         </motion.div>
 
-        {/* scroll cue */}
+        {/* modern mouse scroll cue */}
         <motion.div
-          style={reduced ? undefined : { opacity: cueOpacity }}
-          className="absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2 text-muted-foreground"
-          aria-hidden="true"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 1.6, ease: EASE_LUX }}
+          className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2"
         >
-          <span className="font-mono text-[10px] uppercase tracking-[0.4em]">Scroll</span>
-          <motion.span
-            animate={reduced ? undefined : { y: [0, 7, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <ArrowDown className="size-4" />
-          </motion.span>
+          <motion.div style={reduced ? undefined : { opacity: cueOpacity }}>
+            <ScrollMouse reduced={reduced} />
+          </motion.div>
         </motion.div>
       </div>
     </section>
