@@ -1,6 +1,6 @@
 "use client";
 
-import { AmbientBackground } from "@/components/layout/AmbientBackground";
+import BackgroundDots from "@/components/ui/background-gradient-snippet-demo";
 import { ChapterNav } from "@/components/navigation/ChapterNav";
 import { ChapterProgress } from "@/components/navigation/ChapterProgress";
 import { ScrollProgress } from "@/components/motion/ScrollProgress";
@@ -14,13 +14,13 @@ import { ComingSoon } from "@/components/sections/ComingSoon";
 import { Contact } from "@/components/sections/Contact";
 
 /**
- * The single client tree for the entire ASDRÉ experience: living background,
- * fixed wayfinding, and the eight story chapters composed in scroll order.
+ * The single client tree for the entire ASDRÉ experience: the fixed dot-grid
+ * background, fixed wayfinding, and the eight story chapters in scroll order.
  */
 export function StoryExperience() {
   return (
     <>
-      <AmbientBackground />
+      <BackgroundDots />
       <ScrollProgress />
       <ChapterNav />
       <ChapterProgress />

@@ -35,8 +35,8 @@
 
   /* Typography — variables set by next/font in app/layout.tsx */
   --font-sans: var(--font-inter);
-  --font-serif: var(--font-playfair);
-  --font-heading: var(--font-playfair);
+  --font-serif: var(--font-roboto-mono);
+  --font-heading: var(--font-roboto-mono);
   --font-mono: var(--font-jetbrains);
 
   /* Radii (luxury soft) */
@@ -124,7 +124,7 @@
   border: 1px solid rgb(255 255 255 / 0.08);
 }
 
-/* Tighter, graphic display leading for hero-scale Playfair */
+/* Tighter, graphic display leading for hero-scale headings */
 @utility text-balance-pretty {
   text-wrap: balance;
 }

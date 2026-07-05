@@ -1,11 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Playfair_Display, Inter, JetBrains_Mono } from "next/font/google";
+import { Roboto_Mono, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { GrainOverlay } from "@/components/layout/GrainOverlay";
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+const robotoMono = Roboto_Mono({
+  variable: "--font-roboto-mono",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   style: ["normal", "italic"],
@@ -65,7 +65,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${playfair.variable} ${inter.variable} ${jetbrains.variable} h-full`}
+      className={`${robotoMono.variable} ${inter.variable} ${jetbrains.variable} h-full`}
     >
       <body className="relative min-h-full bg-background text-foreground">
         <a
