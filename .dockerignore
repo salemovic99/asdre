@@ -1,0 +1,33 @@
+# Dependencies & build output (reinstalled/rebuilt inside the image)
+node_modules
+.next
+out
+build
+
+# Version control & CI
+.git
+.gitignore
+.github
+
+# Local env & secrets (never bake into the image)
+.env
+.env.*
+!.env.example
+
+# Editor / OS cruft
+.vscode
+.idea
+.DS_Store
+*.log
+npm-debug.log*
+
+# Docker & docs
+Dockerfile
+.dockerignore
+README.md
+
+# Agent/tooling files
+AGENTS.md
+CLAUDE.md
+
+# Keep .npmrc — it carries legacy-peer-deps for the React 19 install
