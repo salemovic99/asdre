@@ -13,6 +13,7 @@ import { EASE_LUX, SPRING_SCROLL } from "@/lib/motion";
 import { useReducedMotionPref } from "@/hooks/useReducedMotionPref";
 import { useMouseParallax } from "@/hooks/useMouseParallax";
 import { ScrollMouse } from "@/components/visual/ScrollMouse";
+import { LogoReveal } from "@/components/visual/LogoReveal";
 import { Button } from "@/components/ui/button";
 
 /**
@@ -45,6 +46,8 @@ export function Hero() {
   const auraScale = useSpring(useTransform(p, [0, 0.6], [1, 1.4]), SPRING_SCROLL);
 
   const words = BRAND.heroHeadline.split(" ");
+  // The supporting line begins as the wordmark's last letter finishes flipping.
+  const HEADLINE_DELAY = 1.5;
 
   return (
     <section id="hero" ref={ref} className="relative h-[150vh]">
@@ -94,27 +97,30 @@ export function Hero() {
             />
           </motion.div>
 
-          {/* headline — editorial clip-up, word by word */}
-          <h1 className="max-w-[16ch] font-serif text-5xl font-medium leading-[0.98] tracking-tight text-foreground sm:text-7xl lg:text-8xl">
+          {/* the hero — brand wordmark, each letter flips from its back face */}
+          <LogoReveal reduced={reduced} />
+
+          {/* supporting headline — editorial clip-up, after the logo settles */}
+          <h2 className="mt-8 max-w-[18ch] font-serif text-2xl font-medium leading-tight tracking-tight text-foreground/90 sm:text-3xl lg:text-4xl">
             {words.map((word, i) => (
-              <span key={`${word}-${i}`} className="inline-block overflow-hidden pb-[0.08em] align-bottom">
+              <span key={`${word}-${i}`} className="inline-block overflow-hidden pb-[0.06em] align-bottom">
                 <motion.span
                   className="inline-block"
                   initial={reduced ? undefined : { y: "110%" }}
                   animate={reduced ? undefined : { y: "0%" }}
-                  transition={{ duration: 0.95, delay: 0.55 + i * 0.09, ease: EASE_LUX }}
+                  transition={{ duration: 0.8, delay: HEADLINE_DELAY + i * 0.07, ease: EASE_LUX }}
                 >
                   {word}
                 </motion.span>
                 {i < words.length - 1 && " "}
               </span>
             ))}
-          </h1>
+          </h2>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.1, delay: 0.55 + words.length * 0.09 + 0.15, ease: EASE_LUX }}
+            transition={{ duration: 1.1, delay: HEADLINE_DELAY + 0.4, ease: EASE_LUX }}
             className="mt-7 max-w-md text-base text-muted-foreground sm:text-lg"
           >
             {BRAND.heroSubtitle}
@@ -123,7 +129,7 @@ export function Hero() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.1, delay: 0.55 + words.length * 0.09 + 0.35, ease: EASE_LUX }}
+            transition={{ duration: 1.1, delay: HEADLINE_DELAY + 0.6, ease: EASE_LUX }}
             className="mt-10"
           >
             <Button
@@ -139,7 +145,7 @@ export function Hero() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 1.6, ease: EASE_LUX }}
+          transition={{ duration: 1, delay: 2.6, ease: EASE_LUX }}
           className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2"
         >
           <motion.div style={reduced ? undefined : { opacity: cueOpacity }}>
