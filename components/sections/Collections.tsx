@@ -14,7 +14,6 @@ import { SPRING_SCROLL, SPRING_SOFT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Reveal } from "@/components/motion/Reveal";
-import { FloatingObject } from "@/components/motion/FloatingObject";
 import { Sculpture } from "@/components/visual/Shapes";
 import { useReducedMotionPref } from "@/hooks/useReducedMotionPref";
 import { useIsMobile } from "@/hooks/useIsMobile";
@@ -42,11 +41,7 @@ function RotatableSculpture({ tone }: { tone: "cool" | "warm" }) {
   const sry = useSpring(rotateY, SPRING_SOFT);
 
   if (!interactive) {
-    return (
-      <FloatingObject rotateDuration={reduced ? 0 : 30} spin="y" amplitude={reduced ? 0 : 10}>
-        <Sculpture tone={tone} className="h-[40vh] max-h-[380px] w-auto" />
-      </FloatingObject>
-    );
+    return <Sculpture tone={tone} className="h-[40vh] max-h-[380px] w-auto" />;
   }
 
   return (
