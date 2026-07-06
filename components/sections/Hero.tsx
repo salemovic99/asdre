@@ -12,20 +12,25 @@ import { BRAND } from "@/lib/content";
 import { EASE_LUX, SPRING_SCROLL } from "@/lib/motion";
 import { useReducedMotionPref } from "@/hooks/useReducedMotionPref";
 import { useMouseParallax } from "@/hooks/useMouseParallax";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import { ArrowDown, ArrowRight } from "lucide-react";
 import { ScrollMouse } from "@/components/visual/ScrollMouse";
 import { LogoReveal } from "@/components/visual/LogoReveal";
 import { Button } from "@/components/ui/button";
 
 /**
- * The overture. No hard object anymore — just the wordmark floating in light,
- * with a soft indigo aura that follows the pointer. Type reveals line-by-line
- * (an editorial clip-up), and as the user scrolls the camera eases forward
- * (subtle scale + blur + fade), handing off to the first chapter.
+ * The overture — the wordmark floating in light with a pointer-tracked indigo
+ * aura. On scroll the camera flies INTO the letter "D": the D zooms into its
+ * own white counter (a portal) while the other letters and copy streak past,
+ * an indigo bloom flares, and a white seam blooms open into the About section.
+ * About is the same warm white (#fafaf9), so the handoff is invisible — you
+ * travel through the logo into the rest of the site. Fully scroll-driven and
+ * reversible; degrades to a plain crossfade under reduced motion.
  */
 export function Hero() {
   const ref = useRef<HTMLElement>(null);
   const { reduced } = useReducedMotionPref();
+  const isMobile = useIsMobile();
   const { x: mx, y: my } = useMouseParallax();
 
   const { scrollYProgress } = useScroll({
@@ -34,17 +39,28 @@ export function Hero() {
   });
   const p = useSpring(scrollYProgress, SPRING_SCROLL);
 
-  // Dive-in: content eases forward and dissolves.
-  const contentScale = useTransform(p, [0, 0.6], [1, 1.12]);
-  const opacity = useTransform(p, [0, 0.5], [1, 0]);
-  const blurPx = useTransform(p, [0, 0.55], [0, 14]);
-  const blur = useMotionTemplate`blur(${blurPx}px)`;
+  // ── Copy sub-groups (kicker / headline / subtitle / mobile CTA) dissolve as
+  //    the dive begins. The logo is deliberately excluded — it runs the portal.
+  const textOpacity = useTransform(p, [0.08, 0.28], [1, 0]);
+  const textY = useTransform(p, [0.08, 0.32], [0, -24]);
+  const textBlurPx = useTransform(p, [0.08, 0.3], [0, 10]);
+  const textBlur = useMotionTemplate`blur(${textBlurPx}px)`;
+  const railOpacity = useTransform(p, [0.08, 0.24], [1, 0]);
   const cueOpacity = useTransform(p, [0, 0.12], [1, 0]);
 
-  // Pointer-reactive aura (replaces the old orb) — drifts, never a hard shape.
+  // Pointer-reactive aura → soft light bloom through the aperture.
   const auraX = useTransform(mx, [-0.5, 0.5], ["-8%", "8%"]);
   const auraY = useTransform(my, [-0.5, 0.5], ["-6%", "6%"]);
-  const auraScale = useSpring(useTransform(p, [0, 0.6], [1, 1.4]), SPRING_SCROLL);
+  const auraOpacity = useTransform(p, [0.08, 0.42], [0.55, 0]);
+  const auraScale = useSpring(useTransform(p, [0.08, 0.6], [1, 1.6]), SPRING_SCROLL);
+
+  // Portal overlays: indigo light bloom, then the white seam into About.
+  const bloomOpacity = useTransform(p, [0.3, 0.5, 0.62], [0, 0.6, 0]);
+  const bloomScale = useTransform(p, [0.3, 0.62], [1, 3.2]);
+  const whiteout = useTransform(p, [0.5, 0.6, 0.66, 0.93], [0, 1, 1, 0]);
+
+  // Reduced motion: a plain content crossfade, no pin theatrics.
+  const reducedOpacity = useTransform(p, [0, 0.8], [1, 0]);
 
   const words = BRAND.heroHeadline.split(" ");
   // The supporting line begins as the wordmark's last letter finishes flipping.
@@ -52,16 +68,21 @@ export function Hero() {
   // Letters for the vertical CTA rail (spaces become brand dots).
   const CTA_LETTERS = Array.from(BRAND.heroCta);
 
+  // Longer runway on desktop gives the fly-through room; short/none when reduced.
+  const trackHeight = reduced ? "h-[100vh]" : isMobile ? "h-[220vh]" : "h-[280vh]";
+  // Scroll-driven fade for the copy sub-groups (skipped under reduced motion).
+  const textStyle = reduced ? undefined : { opacity: textOpacity, y: textY, filter: textBlur };
+
   return (
-    <section id="hero" ref={ref} className="relative h-[150vh]">
+    <section id="hero" ref={ref} className={`relative ${trackHeight}`}>
       <div className="sticky top-0 flex h-screen w-full items-center justify-center overflow-hidden">
-        {/* soft indigo aura — the modern focal light, tracks the pointer */}
+        {/* soft indigo aura — focal light + bloom, tracks the pointer */}
         <motion.div
           aria-hidden="true"
           style={
             reduced
               ? { opacity: 0.5 }
-              : { x: auraX, y: auraY, scale: auraScale, opacity }
+              : { x: auraX, y: auraY, scale: auraScale, opacity: auraOpacity }
           }
           className="pointer-events-none absolute top-[42%] left-1/2 size-[70vw] max-w-[720px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(99,102,241,0.20),rgba(99,102,241,0.06)_45%,transparent_70%)] blur-[60px]"
         />
@@ -73,90 +94,98 @@ export function Hero() {
         />
 
         <motion.div
-          style={reduced ? undefined : { scale: contentScale, opacity, filter: blur }}
+          style={reduced ? { opacity: reducedOpacity } : undefined}
           className="relative z-10 flex flex-col items-center px-6 text-center"
         >
-          {/* kicker with a drawing-in hairline */}
-          <motion.div
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.4, ease: EASE_LUX }}
-            className="mb-7 flex items-center gap-3"
-          >
-            <motion.span
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 1, delay: 0.7, ease: EASE_LUX }}
-              className="h-px w-8 origin-right bg-brand/50"
-            />
-            <span className="font-mono text-[11px] uppercase tracking-[0.5em] text-brand">
-              {BRAND.tagline}
-            </span>
-            <motion.span
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 1, delay: 0.7, ease: EASE_LUX }}
-              className="h-px w-8 origin-left bg-brand/50"
-            />
-          </motion.div>
-
-          {/* the hero — brand wordmark, each letter flips from its back face */}
-          <LogoReveal reduced={reduced} />
-
-          {/* supporting headline — editorial clip-up, after the logo settles */}
-          <h2 className="mt-8 max-w-[18ch] font-serif text-2xl font-medium leading-tight tracking-tight text-foreground/90 sm:text-3xl lg:text-4xl">
-            {words.map((word, i) => (
-              <span key={`${word}-${i}`} className="inline-block overflow-hidden pb-[0.06em] align-bottom">
-                <motion.span
-                  className="inline-block"
-                  initial={reduced ? undefined : { y: "110%" }}
-                  animate={reduced ? undefined : { y: "0%" }}
-                  transition={{ duration: 0.8, delay: HEADLINE_DELAY + i * 0.07, ease: EASE_LUX }}
-                >
-                  {word}
-                </motion.span>
-                {i < words.length - 1 && " "}
-              </span>
-            ))}
-          </h2>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.1, delay: HEADLINE_DELAY + 0.4, ease: EASE_LUX }}
-            className="mt-8 flex flex-col items-center gap-3.5"
-          >
-            <span
-              aria-hidden="true"
-              className="h-px w-12 bg-gradient-to-r from-transparent via-brand/55 to-transparent"
-            />
-            <p className="max-w-md font-serif text-lg italic leading-relaxed tracking-wide text-foreground/75 sm:text-xl">
-              {BRAND.heroSubtitle}
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.1, delay: HEADLINE_DELAY + 0.6, ease: EASE_LUX }}
-            className="mt-11 md:hidden"
-          >
-            <Button
-              render={<a href="#about" />}
-              className="group h-14 gap-4 rounded-none bg-primary py-0 pr-3 pl-8 text-sm font-medium tracking-[0.02em] text-primary-foreground shadow-[0_12px_34px_-14px_rgba(28,25,23,0.55)] transition-all duration-500 ease-out hover:-translate-y-0.5 hover:shadow-[0_26px_52px_-18px_rgba(79,70,229,0.5)]"
+          {/* kicker — dissolves with the copy as the camera dives */}
+          <motion.div style={textStyle}>
+            <motion.div
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.4, ease: EASE_LUX }}
+              className="mb-7 flex items-center gap-3"
             >
-              <span>{BRAND.heroCta}</span>
-              <span className="relative flex size-9 items-center justify-center overflow-hidden rounded-full bg-brand text-brand-foreground">
-                <ArrowRight className="size-4 transition-transform duration-500 ease-out group-hover:translate-x-6 group-hover:-translate-y-6" />
-                <ArrowRight className="absolute size-4 -translate-x-6 translate-y-6 transition-transform duration-500 ease-out group-hover:translate-x-0 group-hover:translate-y-0" />
+              <motion.span
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 1, delay: 0.7, ease: EASE_LUX }}
+                className="h-px w-8 origin-right bg-brand/50"
+              />
+              <span className="font-mono text-[11px] uppercase tracking-[0.5em] text-brand">
+                {BRAND.tagline}
               </span>
-            </Button>
+              <motion.span
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 1, delay: 0.7, ease: EASE_LUX }}
+                className="h-px w-8 origin-left bg-brand/50"
+              />
+            </motion.div>
+          </motion.div>
+
+          {/* the hero — brand wordmark; the "D" becomes the scroll portal */}
+          <LogoReveal
+            reduced={reduced}
+            isMobile={isMobile}
+            flyProgress={reduced ? undefined : p}
+          />
+
+          {/* supporting copy — dissolves as one group; the logo is excluded */}
+          <motion.div style={textStyle} className="flex flex-col items-center">
+            <h2 className="mt-8 max-w-[18ch] font-serif text-2xl font-medium leading-tight tracking-tight text-foreground/90 sm:text-3xl lg:text-4xl">
+              {words.map((word, i) => (
+                <span key={`${word}-${i}`} className="inline-block overflow-hidden pb-[0.06em] align-bottom">
+                  <motion.span
+                    className="inline-block"
+                    initial={reduced ? undefined : { y: "110%" }}
+                    animate={reduced ? undefined : { y: "0%" }}
+                    transition={{ duration: 0.8, delay: HEADLINE_DELAY + i * 0.07, ease: EASE_LUX }}
+                  >
+                    {word}
+                  </motion.span>
+                  {i < words.length - 1 && " "}
+                </span>
+              ))}
+            </h2>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.1, delay: HEADLINE_DELAY + 0.4, ease: EASE_LUX }}
+              className="mt-8 flex flex-col items-center gap-3.5"
+            >
+              <span
+                aria-hidden="true"
+                className="h-px w-12 bg-gradient-to-r from-transparent via-brand/55 to-transparent"
+              />
+              <p className="max-w-md font-serif text-lg italic leading-relaxed tracking-wide text-foreground/75 sm:text-xl">
+                {BRAND.heroSubtitle}
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.1, delay: HEADLINE_DELAY + 0.6, ease: EASE_LUX }}
+              className="mt-11 md:hidden"
+            >
+              <Button
+                render={<a href="#about" />}
+                className="group h-14 gap-4 rounded-none bg-primary py-0 pr-3 pl-8 text-sm font-medium tracking-[0.02em] text-primary-foreground shadow-[0_12px_34px_-14px_rgba(28,25,23,0.55)] transition-all duration-500 ease-out hover:-translate-y-0.5 hover:shadow-[0_26px_52px_-18px_rgba(79,70,229,0.5)]"
+              >
+                <span>{BRAND.heroCta}</span>
+                <span className="relative flex size-9 items-center justify-center overflow-hidden rounded-full bg-brand text-brand-foreground">
+                  <ArrowRight className="size-4 transition-transform duration-500 ease-out group-hover:translate-x-6 group-hover:-translate-y-6" />
+                  <ArrowRight className="absolute size-4 -translate-x-6 translate-y-6 transition-transform duration-500 ease-out group-hover:translate-x-0 group-hover:translate-y-0" />
+                </span>
+              </Button>
+            </motion.div>
           </motion.div>
         </motion.div>
 
         {/* vertical CTA rail — left edge, letters stacked, arrow pinned to the bottom */}
         <motion.div
-          style={reduced ? undefined : { opacity }}
+          style={reduced ? undefined : { opacity: railOpacity }}
           className="absolute top-1/2 left-4 z-20 hidden h-[70%] -translate-y-1/2 md:block sm:left-6"
         >
           <motion.div
@@ -204,6 +233,26 @@ export function Hero() {
           </motion.div>
         </motion.div>
       </div>
+
+      {/* Portal overlays — rendered OUTSIDE the sticky/transformed layers so
+          position:fixed stays glued to the viewport through the sticky unpin.
+          The indigo bloom flares as the camera nears the aperture; the white
+          seam (#fafaf9) blooms to full over the unpin, then dissolves to reveal
+          About rising from pure white. */}
+      {!reduced && (
+        <>
+          <motion.div
+            aria-hidden="true"
+            style={{ opacity: bloomOpacity, scale: bloomScale, willChange: "opacity, transform" }}
+            className="pointer-events-none fixed inset-0 z-[30] mix-blend-screen bg-[radial-gradient(circle_at_50%_48%,rgba(99,102,241,0.55),rgba(99,102,241,0.12)_38%,transparent_62%)]"
+          />
+          <motion.div
+            aria-hidden="true"
+            style={{ opacity: whiteout, willChange: "opacity" }}
+            className="pointer-events-none fixed inset-0 z-[75] bg-[#fafaf9]"
+          />
+        </>
+      )}
     </section>
   );
 }
