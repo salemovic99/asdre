@@ -31,11 +31,11 @@ const LETTERS = Array.from(BRAND.name);
 
 export function LogoReveal({ reduced = false }: { reduced?: boolean }) {
   return (
-    <h1 className="font-serif text-[clamp(3.5rem,16vw,12rem)] font-medium leading-[0.95] tracking-[0.08em] text-foreground">
+    <h1 className="font-serif text-[clamp(4rem,18vw,15rem)] font-medium leading-[0.95] tracking-normal text-foreground">
       {/* Read as one word by assistive tech; the flipping glyphs are decorative. */}
       <span className="sr-only">{BRAND.name}</span>
 
-      <span aria-hidden="true" className="inline-flex [transform-style:preserve-3d]">
+      <span aria-hidden="true" className="inline-flex gap-[0.14em] [transform-style:preserve-3d]">
         {LETTERS.map((char, i) => (
           <motion.span
             key={`${char}-${i}`}

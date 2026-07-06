@@ -143,7 +143,7 @@ export function Hero() {
           >
             <Button
               render={<a href="#about" />}
-              className="group h-14 gap-4 rounded-full bg-primary py-0 pr-3 pl-8 text-sm font-medium tracking-[0.02em] text-primary-foreground shadow-[0_12px_34px_-14px_rgba(28,25,23,0.55)] transition-all duration-500 ease-out hover:-translate-y-0.5 hover:shadow-[0_26px_52px_-18px_rgba(79,70,229,0.5)]"
+              className="group h-14 gap-4 rounded-none bg-primary py-0 pr-3 pl-8 text-sm font-medium tracking-[0.02em] text-primary-foreground shadow-[0_12px_34px_-14px_rgba(28,25,23,0.55)] transition-all duration-500 ease-out hover:-translate-y-0.5 hover:shadow-[0_26px_52px_-18px_rgba(79,70,229,0.5)]"
             >
               <span>{BRAND.heroCta}</span>
               <span className="relative flex size-9 items-center justify-center overflow-hidden rounded-full bg-brand text-brand-foreground">
@@ -157,7 +157,7 @@ export function Hero() {
         {/* vertical CTA rail — left edge, letters stacked, arrow pinned to the bottom */}
         <motion.div
           style={reduced ? undefined : { opacity }}
-          className="absolute top-1/2 left-4 z-20 hidden h-[90%] -translate-y-1/2 md:block sm:left-6"
+          className="absolute top-1/2 left-4 z-20 hidden h-[70%] -translate-y-1/2 md:block sm:left-6"
         >
           <motion.div
             initial={reduced ? undefined : { opacity: 0, x: -16 }}
@@ -167,7 +167,7 @@ export function Hero() {
           >
             <Button
               render={<a href="#about" />}
-              className="group flex h-full w-16 flex-col items-center rounded-full bg-primary py-6 text-primary-foreground shadow-[0_18px_44px_-18px_rgba(28,25,23,0.55)] transition-all duration-500 ease-out hover:shadow-[0_26px_60px_-20px_rgba(79,70,229,0.5)]"
+              className="group flex h-full w-16 flex-col items-center rounded-none bg-primary py-6 text-primary-foreground shadow-[0_18px_44px_-18px_rgba(28,25,23,0.55)] transition-all duration-500 ease-out hover:shadow-[0_26px_60px_-20px_rgba(79,70,229,0.5)]"
             >
               {/* stacked letters — flex-1 centers them and pushes the arrow to the bottom */}
               <span
