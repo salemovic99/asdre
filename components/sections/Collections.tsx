@@ -1,20 +1,36 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import {
+  motion,
+  useMotionValue,
+  useScroll,
+  useSpring,
+  useTransform,
+  type MotionValue,
+} from "framer-motion";
 import { COLLECTIONS, type Collection } from "@/lib/content";
-import { EASE_LUX, SPRING_SOFT, VIEWPORT_ONCE } from "@/lib/motion";
+import { SPRING_SCROLL, SPRING_SOFT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FadeIn } from "@/components/motion/FadeIn";
 import { Reveal } from "@/components/motion/Reveal";
 import { FloatingObject } from "@/components/motion/FloatingObject";
 import { Sculpture } from "@/components/visual/Shapes";
 import { useReducedMotionPref } from "@/hooks/useReducedMotionPref";
 import { useIsMobile } from "@/hooks/useIsMobile";
 
-/** A rotatable sculpture — follows the pointer across the card. */
+/**
+ * Collections — a cinematic horizontal camera pan through two worlds. The
+ * section pins; scrolling travels sideways from LÉMAN (cool) to RIVIERA (warm)
+ * while the light backdrop shifts cool → warm and the entering world grows into
+ * focus. "Two Worlds, One House." made literal. Fully scroll-driven and
+ * reversible; degrades to a static stacked layout under reduced motion.
+ */
+
+const COOL = "#4f46e5";
+const WARM = "#c98a2b";
+
+/** A rotatable sculpture — follows the pointer across the panel (desktop only). */
 function RotatableSculpture({ tone }: { tone: "cool" | "warm" }) {
   const { reduced } = useReducedMotionPref();
   const isMobile = useIsMobile();
@@ -27,8 +43,8 @@ function RotatableSculpture({ tone }: { tone: "cool" | "warm" }) {
 
   if (!interactive) {
     return (
-      <FloatingObject rotateDuration={reduced ? 0 : 26} spin="y" amplitude={10}>
-        <Sculpture tone={tone} className="h-[36vh] max-h-[320px] w-auto" />
+      <FloatingObject rotateDuration={reduced ? 0 : 30} spin="y" amplitude={reduced ? 0 : 10}>
+        <Sculpture tone={tone} className="h-[40vh] max-h-[380px] w-auto" />
       </FloatingObject>
     );
   }
@@ -51,58 +67,83 @@ function RotatableSculpture({ tone }: { tone: "cool" | "warm" }) {
         rotateY.set(0);
       }}
     >
-      <Sculpture tone={tone} className="h-[36vh] max-h-[320px] w-auto" />
+      <Sculpture tone={tone} className="h-[40vh] max-h-[380px] w-auto" />
     </motion.div>
   );
 }
 
-function CollectionPanel({ collection, delay }: { collection: Collection; delay: number }) {
-  const ref = useRef<HTMLDivElement>(null);
+// ── The cool→warm light backdrop that tracks the pan.
+function TintBackground({ p }: { p: MotionValue<number> }) {
+  const warmOpacity = useTransform(p, [0.3, 0.6], [0, 1]);
+  const coolGlow = useTransform(p, [0.3, 0.55], [0.9, 0]);
+  const warmGlow = useTransform(p, [0.35, 0.62], [0, 1]);
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={VIEWPORT_ONCE}
-      transition={{ duration: 1, delay, ease: EASE_LUX }}
-    >
-      <Card
-        className={cn(
-          "group relative flex h-full flex-col items-center gap-8 overflow-hidden rounded-[2rem] border-border/60 p-9 text-center backdrop-blur-md sm:p-12",
-          collection.tone === "cool"
-            ? "bg-[linear-gradient(160deg,rgba(238,241,246,0.9),rgba(255,255,255,0.6))]"
-            : "bg-[linear-gradient(160deg,rgba(247,237,224,0.9),rgba(255,255,255,0.6))]",
-        )}
-      >
-        {/* tonal glow */}
-        <div
-          aria-hidden="true"
-          className={cn(
-            "absolute -top-1/3 left-1/2 size-[120%] -translate-x-1/2 rounded-full blur-3xl transition-opacity duration-700 group-hover:opacity-90",
-            collection.tone === "cool"
-              ? "bg-[radial-gradient(circle,rgba(99,102,241,0.14),transparent_60%)]"
-              : "bg-[radial-gradient(circle,rgba(201,138,43,0.16),transparent_60%)]",
-          )}
-        />
+    <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+      <div className="absolute inset-0 bg-[linear-gradient(160deg,#eef1f6,#fafaf9_58%,#ffffff)]" />
+      <motion.div
+        style={{ opacity: warmOpacity }}
+        className="absolute inset-0 bg-[linear-gradient(160deg,#f7ede0,#faf6f0_58%,#fffdfa)]"
+      />
+      <motion.div
+        style={{ opacity: coolGlow }}
+        className="absolute top-1/3 -left-[8%] size-[70vw] max-w-[900px] -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(99,102,241,0.16),transparent_62%)] blur-3xl"
+      />
+      <motion.div
+        style={{ opacity: warmGlow }}
+        className="absolute top-2/3 -right-[8%] size-[70vw] max-w-[900px] -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(201,138,43,0.18),transparent_62%)] blur-3xl"
+      />
+    </div>
+  );
+}
 
-        <div className="relative flex min-h-[36vh] items-center justify-center">
+// ── One full-viewport "world" in the horizontal track.
+function WorldPanel({ p, index, collection }: { p: MotionValue<number>; index: number; collection: Collection }) {
+  const isCool = collection.tone === "cool";
+  const accent = isCool ? COOL : WARM;
+
+  // Camera focus — the entering world grows/sharpens, the leaving one recedes.
+  const scale = useTransform(p, [0.3, 0.6], index === 0 ? [1, 0.9] : [0.9, 1]);
+  const opacity = useTransform(
+    p,
+    index === 0 ? [0.42, 0.58] : [0.32, 0.48],
+    index === 0 ? [1, 0.5] : [0.5, 1],
+  );
+  // Parallax on the giant ghost wordmark for editorial depth.
+  const ghostX = useTransform(p, [0.3, 0.6], index === 0 ? ["0%", "-12%"] : ["12%", "0%"]);
+
+  return (
+    <div className="relative flex h-full w-screen shrink-0 items-center justify-center px-6 sm:px-16">
+      <motion.span
+        aria-hidden="true"
+        style={{ x: ghostX, color: isCool ? "rgba(79,70,229,0.06)" : "rgba(201,138,43,0.09)" }}
+        className="pointer-events-none absolute inset-0 flex items-center justify-center font-serif text-[26vw] font-medium leading-none tracking-tighter select-none"
+      >
+        {collection.name}
+      </motion.span>
+
+      <motion.div
+        style={{ scale, opacity }}
+        className="relative z-10 flex max-w-2xl flex-col items-center gap-8 text-center"
+      >
+        <div className="flex min-h-[40vh] items-center justify-center">
           <RotatableSculpture tone={collection.tone} />
         </div>
 
-        <div className="relative flex flex-col items-center">
-          <span className="font-mono text-xs tracking-[0.4em] text-brand">
+        <div className="flex flex-col items-center">
+          <span className="font-mono text-xs tracking-[0.4em]" style={{ color: accent }}>
             {collection.index}
           </span>
-          <h3 className="mt-3 font-serif text-4xl tracking-[0.18em] text-foreground sm:text-5xl">
-            {collection.name}
-          </h3>
-          <p className="mt-4 max-w-xs text-sm font-medium text-secondary-foreground">
+          <Reveal
+            as="h3"
+            text={collection.name}
+            className="mt-3 font-serif text-[clamp(3rem,10vw,7rem)] font-medium leading-none tracking-[0.14em] text-foreground"
+          />
+          <p className="mt-5 max-w-md text-balance text-base font-medium text-secondary-foreground">
             {collection.tagline}
           </p>
-          <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
+          <p className="mt-3 max-w-lg text-balance text-sm leading-relaxed text-muted-foreground">
             {collection.description}
           </p>
-
           <div className="mt-6 flex flex-wrap justify-center gap-2">
             {collection.notes.map((note) => (
               <Badge
@@ -115,12 +156,50 @@ function CollectionPanel({ collection, delay }: { collection: Collection; delay:
             ))}
           </div>
         </div>
-      </Card>
+      </motion.div>
+    </div>
+  );
+}
+
+// ── The "Two Worlds, One House." title card, fading out as the pan begins.
+function IntroTitle({ p }: { p: MotionValue<number> }) {
+  const opacity = useTransform(p, [0, 0.05, 0.24, 0.3], [0, 1, 1, 0]);
+  const y = useTransform(p, [0, 0.3], [0, -20]);
+  return (
+    <motion.div
+      style={{ opacity, y }}
+      className="pointer-events-none absolute inset-x-0 top-[14%] z-20 flex flex-col items-center px-6 text-center"
+    >
+      <span className="font-mono text-xs uppercase tracking-[0.5em] text-brand">Two Worlds</span>
+      <h2 className="mt-4 font-serif text-3xl font-medium tracking-tight text-foreground sm:text-5xl">
+        Two Worlds, One House.
+      </h2>
     </motion.div>
   );
 }
 
-export function Collections() {
+// ── Bottom progress rail — which world you're travelling through.
+function WorldProgress({ p }: { p: MotionValue<number> }) {
+  const fill = useTransform(p, [0.3, 0.6], [0, 1]);
+  const leftOpacity = useTransform(p, [0.42, 0.52], [1, 0.4]);
+  const rightOpacity = useTransform(p, [0.48, 0.58], [0.4, 1]);
+  return (
+    <div className="pointer-events-none absolute inset-x-0 bottom-10 z-20 flex items-center justify-center gap-4 px-6 font-mono text-[10px] uppercase tracking-[0.35em] sm:gap-5">
+      <motion.span style={{ opacity: leftOpacity }} className="text-foreground">
+        I · LÉMAN
+      </motion.span>
+      <span className="relative h-px w-20 overflow-hidden bg-border sm:w-40">
+        <motion.span style={{ scaleX: fill }} className="absolute inset-0 origin-left bg-brand" />
+      </span>
+      <motion.span style={{ opacity: rightOpacity }} className="text-foreground">
+        RIVIERA · II
+      </motion.span>
+    </div>
+  );
+}
+
+// ── Reduced-motion fallback: a static, light, stacked two-world layout.
+function StaticCollections() {
   return (
     <section
       id="collections"
@@ -129,32 +208,96 @@ export function Collections() {
     >
       <div className="mx-auto w-full max-w-6xl px-6 sm:px-10">
         <div className="mb-16 flex flex-col items-center text-center">
-          <FadeIn className="mb-6">
-            <span className="font-mono text-xs uppercase tracking-[0.5em] text-brand">
-              05 — Collections
-            </span>
-          </FadeIn>
-          <Reveal
-            as="h2"
-            text="Two Worlds, One House."
-            className="font-serif text-4xl font-medium tracking-tight text-foreground sm:text-6xl"
-          />
-          <span id="collections-heading" className="sr-only">
-            Collections
+          <span className="mb-6 font-mono text-xs uppercase tracking-[0.5em] text-brand">
+            05 — Collections
           </span>
-          <FadeIn delay={0.1} className="mt-6 max-w-xl">
-            <p className="text-base text-muted-foreground">
-              Each ASDRÉ piece is made from carefully selected premium fabrics — quality felt
-              before it&rsquo;s seen.
-            </p>
-          </FadeIn>
+          <h2
+            id="collections-heading"
+            className="font-serif text-4xl font-medium tracking-tight text-foreground sm:text-6xl"
+          >
+            Two Worlds, One House.
+          </h2>
         </div>
 
         <div className="grid gap-8 lg:grid-cols-2">
-          {COLLECTIONS.map((collection, i) => (
-            <CollectionPanel key={collection.name} collection={collection} delay={i * 0.12} />
+          {COLLECTIONS.map((c) => (
+            <div
+              key={c.name}
+              className={cn(
+                "flex flex-col items-center gap-8 rounded-[2rem] border border-border/60 p-9 text-center sm:p-12",
+                c.tone === "cool"
+                  ? "bg-[linear-gradient(160deg,rgba(238,241,246,0.9),rgba(255,255,255,0.6))]"
+                  : "bg-[linear-gradient(160deg,rgba(247,237,224,0.9),rgba(255,255,255,0.6))]",
+              )}
+            >
+              <div className="flex min-h-[34vh] items-center justify-center">
+                <Sculpture tone={c.tone} className="h-[34vh] max-h-[300px] w-auto" />
+              </div>
+              <div className="flex flex-col items-center">
+                <span
+                  className="font-mono text-xs tracking-[0.4em]"
+                  style={{ color: c.tone === "cool" ? COOL : WARM }}
+                >
+                  {c.index}
+                </span>
+                <h3 className="mt-3 font-serif text-4xl tracking-[0.18em] text-foreground sm:text-5xl">
+                  {c.name}
+                </h3>
+                <p className="mt-4 max-w-xs text-sm font-medium text-secondary-foreground">
+                  {c.tagline}
+                </p>
+                <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
+                  {c.description}
+                </p>
+              </div>
+            </div>
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
+
+export function Collections() {
+  const ref = useRef<HTMLElement>(null);
+  const { reduced } = useReducedMotionPref();
+
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  const p = useSpring(scrollYProgress, SPRING_SCROLL);
+
+  // Track pans one viewport left (2 worlds × 100vw = 200vw track → -50%).
+  const x = useTransform(p, [0.3, 0.6], ["0%", "-50%"]);
+
+  if (reduced) return <StaticCollections />;
+
+  return (
+    <section
+      id="collections"
+      ref={ref}
+      aria-labelledby="collections-heading"
+      className="relative h-[300vh] md:h-[360vh]"
+    >
+      <div className="sticky top-0 h-screen w-full overflow-hidden bg-[#fafaf9]">
+        <TintBackground p={p} />
+        <h2 id="collections-heading" className="sr-only">
+          Collections
+        </h2>
+
+        <motion.div style={{ x }} className="flex h-full w-[200vw]">
+          {COLLECTIONS.map((c, i) => (
+            <WorldPanel key={c.name} p={p} index={i} collection={c} />
+          ))}
+        </motion.div>
+
+        <IntroTitle p={p} />
+
+        <div className="pointer-events-none absolute top-24 left-6 z-20 sm:top-28 sm:left-10">
+          <span className="font-mono text-xs uppercase tracking-[0.5em] text-brand">
+            05 — Collections
+          </span>
+        </div>
+
+        <WorldProgress p={p} />
       </div>
     </section>
   );
