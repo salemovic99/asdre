@@ -152,3 +152,40 @@ export function ParticleField({ count = 42, className }: { count?: number; class
     </div>
   );
 }
+
+/**
+ * A subtle alpine ridge silhouette for the dark "Swiss Alps" scene. Layered
+ * peaks fade from indigo-tinted dark up into the void, following the house
+ * gradient + soft-shadow convention.
+ */
+export function MountainSilhouette({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 1440 420"
+      preserveAspectRatio="xMidYMax meet"
+      className={cn("h-auto w-full", className)}
+      aria-hidden="true"
+    >
+      <defs>
+        <linearGradient id="ridge-back" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#4f46e5" stopOpacity="0.35" />
+          <stop offset="1" stopColor="#0c0a09" stopOpacity="0.9" />
+        </linearGradient>
+        <linearGradient id="ridge-front" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#1a1830" stopOpacity="0.95" />
+          <stop offset="1" stopColor="#0c0a09" stopOpacity="1" />
+        </linearGradient>
+      </defs>
+      {/* far ridge */}
+      <path
+        d="M0 420 L0 250 L230 120 L430 235 L640 95 L880 240 L1080 130 L1290 210 L1440 150 L1440 420 Z"
+        fill="url(#ridge-back)"
+      />
+      {/* near ridge */}
+      <path
+        d="M0 420 L0 320 L280 200 L520 330 L760 190 L1010 320 L1230 235 L1440 315 L1440 420 Z"
+        fill="url(#ridge-front)"
+      />
+    </svg>
+  );
+}

@@ -11,31 +11,25 @@ export const BRAND = {
   heroCta: "Explore Our Story",
 } as const;
 
+/**
+ * The founding story, told as a dark "camera flying through 3D space" journey.
+ * The visible per-beat copy lives in About.tsx's BEATS table (presentational);
+ * this holds the framing copy, the screen-reader prose, and the finale.
+ */
 export const ABOUT = {
   index: "01",
   question: "Who are we?",
   heading: "About ASDRÉ",
-  /** The founding story, told one cinematic line at a time. */
-  lines: [
-    { text: "ASDRÉ was founded by a Saudi and an Egyptian student." },
-    { text: "They met while studying in Leysin, nestled in the heart of the Swiss Alps." },
-    { text: "Inspired by Swiss design, timeless style, and exceptional craftsmanship…" },
-    { text: "They set out to create a brand that brings quiet luxury into everyday life." },
-    { text: "We believe true luxury isn’t defined by loud logos or passing trends." },
-    { text: "It is defined by timeless design, lasting comfort, and pieces you’ll wear forever." },
-    { text: "When someone hears ASDRÉ…" },
-    { text: "We don’t want them to picture a logo." },
-    { text: "We want them to picture a feeling." },
-    { text: "Calm.", accent: true },
-    { text: "Refined.", accent: true },
-    { text: "Considered.", accent: true },
-    { text: "A brand where quality is felt before it is seen." },
-  ],
-  /** The permanent finale — two collections revealed from opposite sides. */
-  finale: [
-    { name: "LÉMAN", subtitle: "Refined everyday essentials.", from: "left" },
-    { name: "RIVIERA", subtitle: "Elevated, timeless elegance.", from: "right" },
-  ],
+  a11yStory:
+    "ASDRÉ was founded by a Saudi and an Egyptian student who met while studying in Leysin, in the heart of the Swiss Alps. Inspired by Swiss design, timeless style, and exceptional quality, they set out to bring quiet luxury into everyday life. We believe true luxury isn’t defined by loud logos or passing trends. It is defined by timeless design, lasting comfort, and pieces you’ll wear forever. When someone hears ASDRÉ, we want them to picture a feeling — calm, refined, and considered. A brand where quality is felt before it is seen.",
+  finale: {
+    logo: "ASDRÉ",
+    line: "A brand where quality is felt before it is seen.",
+    cards: [
+      { name: "LÉMAN", subtitle: "Refined everyday essentials.", from: "left" },
+      { name: "RIVIERA", subtitle: "Elevated, timeless elegance.", from: "right" },
+    ],
+  },
 } as const;
 
 export const VISION = {

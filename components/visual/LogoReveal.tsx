@@ -132,7 +132,7 @@ export function LogoReveal({ reduced = false, isMobile = false, flyProgress }: L
   const fp = flyProgress ?? zero;
 
   return (
-    <h1 className="font-serif text-[clamp(4rem,18vw,15rem)] font-medium leading-[0.95] tracking-normal text-foreground">
+    <h1 className="font-serif text-[clamp(4rem,18vw,15rem)] font-medium leading-[0.95] tracking-widest text-foreground">
       {/* Read as one word by assistive tech; the flipping glyphs are decorative. */}
       <span className="sr-only">{BRAND.name}</span>
 
