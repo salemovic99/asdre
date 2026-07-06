@@ -13,10 +13,8 @@ import { EASE_LUX, SPRING_SCROLL } from "@/lib/motion";
 import { useReducedMotionPref } from "@/hooks/useReducedMotionPref";
 import { useMouseParallax } from "@/hooks/useMouseParallax";
 import { useIsMobile } from "@/hooks/useIsMobile";
-import { ArrowDown, ArrowRight } from "lucide-react";
 import { ScrollMouse } from "@/components/visual/ScrollMouse";
 import { LogoReveal } from "@/components/visual/LogoReveal";
-import { Button } from "@/components/ui/button";
 
 /**
  * The overture — the wordmark floating in light with a pointer-tracked indigo
@@ -45,7 +43,6 @@ export function Hero() {
   const textY = useTransform(p, [0.08, 0.32], [0, -24]);
   const textBlurPx = useTransform(p, [0.08, 0.3], [0, 10]);
   const textBlur = useMotionTemplate`blur(${textBlurPx}px)`;
-  const railOpacity = useTransform(p, [0.08, 0.24], [1, 0]);
   const cueOpacity = useTransform(p, [0, 0.12], [1, 0]);
 
   // Pointer-reactive aura → soft light bloom through the aperture.
@@ -65,8 +62,6 @@ export function Hero() {
   const words = BRAND.heroHeadline.split(" ");
   // The supporting line begins as the wordmark's last letter finishes flipping.
   const HEADLINE_DELAY = 1.5;
-  // Letters for the vertical CTA rail (spaces become brand dots).
-  const CTA_LETTERS = Array.from(BRAND.heroCta);
 
   // Longer runway on desktop gives the fly-through room; short/none when reduced.
   const trackHeight = reduced ? "h-[100vh]" : isMobile ? "h-[220vh]" : "h-[280vh]";
@@ -162,62 +157,6 @@ export function Hero() {
                 {BRAND.heroSubtitle}
               </p>
             </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.1, delay: HEADLINE_DELAY + 0.6, ease: EASE_LUX }}
-              className="mt-11 md:hidden"
-            >
-              <Button
-                render={<a href="#about" />}
-                className="group h-14 gap-4 rounded-none bg-primary py-0 pr-3 pl-8 text-sm font-medium tracking-[0.02em] text-primary-foreground shadow-[0_12px_34px_-14px_rgba(28,25,23,0.55)] transition-all duration-500 ease-out hover:-translate-y-0.5 hover:shadow-[0_26px_52px_-18px_rgba(79,70,229,0.5)]"
-              >
-                <span>{BRAND.heroCta}</span>
-                <span className="relative flex size-9 items-center justify-center overflow-hidden rounded-full bg-brand text-brand-foreground">
-                  <ArrowRight className="size-4 transition-transform duration-500 ease-out group-hover:translate-x-6 group-hover:-translate-y-6" />
-                  <ArrowRight className="absolute size-4 -translate-x-6 translate-y-6 transition-transform duration-500 ease-out group-hover:translate-x-0 group-hover:translate-y-0" />
-                </span>
-              </Button>
-            </motion.div>
-          </motion.div>
-        </motion.div>
-
-        {/* vertical CTA rail — left edge, letters stacked, arrow pinned to the bottom */}
-        <motion.div
-          style={reduced ? undefined : { opacity: railOpacity }}
-          className="absolute top-1/2 left-4 z-20 hidden h-[70%] -translate-y-1/2 md:block sm:left-6"
-        >
-          <motion.div
-            initial={reduced ? undefined : { opacity: 0, x: -16 }}
-            animate={reduced ? undefined : { opacity: 1, x: 0 }}
-            transition={{ duration: 1.1, delay: HEADLINE_DELAY + 0.6, ease: EASE_LUX }}
-            className="h-full"
-          >
-            <Button
-              render={<a href="#about" />}
-              className="group flex h-full w-16 flex-col items-center rounded-none bg-primary py-6 text-primary-foreground shadow-[0_18px_44px_-18px_rgba(28,25,23,0.55)] transition-all duration-500 ease-out hover:shadow-[0_26px_60px_-20px_rgba(79,70,229,0.5)]"
-            >
-              {/* stacked letters — flex-1 centers them and pushes the arrow to the bottom */}
-              <span
-                aria-hidden="true"
-                className="flex flex-1 flex-col items-center justify-center gap-2 font-mono text-xs uppercase tracking-[0.15em]"
-              >
-                {CTA_LETTERS.map((char, i) =>
-                  char === " " ? (
-                    <span key={i} className="my-1 size-1 rounded-full bg-brand/70" />
-                  ) : (
-                    <span key={i}>{char}</span>
-                  ),
-                )}
-              </span>
-              <span className="sr-only">{BRAND.heroCta}</span>
-              {/* arrow badge — pinned to the bottom, slides down on hover */}
-              <span className="relative flex size-9 items-center justify-center overflow-hidden rounded-full bg-brand text-brand-foreground">
-                <ArrowDown className="size-4 transition-transform duration-500 ease-out group-hover:translate-y-6" />
-                <ArrowDown className="absolute size-4 -translate-y-6 transition-transform duration-500 ease-out group-hover:translate-y-0" />
-              </span>
-            </Button>
           </motion.div>
         </motion.div>
 
