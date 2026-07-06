@@ -102,6 +102,7 @@ export const COMING_SOON = {
 export const CONTACT = {
   eyebrow: "Contact",
   question: "Why should you care?",
+  lead: "Let’s talk.",
   location: "Riyadh",
   emails: ["Waleed@Asdré.com", "Faisal@Asdré.com", "Info@Asdré.com"],
   closing: "Welcome to ASDRÉ.",
