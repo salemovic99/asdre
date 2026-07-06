@@ -139,6 +139,13 @@
   mix-blend-mode: multiply;
 }
 
+/* Typewriter caret blink (About storytelling) — auto-stilled under reduced-motion below */
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
 /* Accessibility floor: honor reduced-motion even outside Framer */
 @media (prefers-reduced-motion: reduce) {
   html {

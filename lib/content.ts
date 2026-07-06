@@ -12,21 +12,30 @@ export const BRAND = {
 } as const;
 
 export const ABOUT = {
-  eyebrow: "Made For You",
+  index: "01",
   question: "Who are we?",
-  /** Told as cinematic lines, revealed one after another. */
-  story: [
-    "ASDRÉ was founded by a Saudi and an Egyptian student",
-    "who met while studying in Leysin,",
-    "nestled in the heart of the Swiss Alps.",
-    "Inspired by Swiss design, timeless style, and a passion",
-    "for exceptional quality, they set out to create a brand",
-    "that brings quiet luxury into everyday life.",
+  heading: "About ASDRÉ",
+  /** The founding story, told one cinematic line at a time. */
+  lines: [
+    { text: "ASDRÉ was founded by a Saudi and an Egyptian student." },
+    { text: "They met while studying in Leysin, nestled in the heart of the Swiss Alps." },
+    { text: "Inspired by Swiss design, timeless style, and exceptional craftsmanship…" },
+    { text: "They set out to create a brand that brings quiet luxury into everyday life." },
+    { text: "We believe true luxury isn’t defined by loud logos or passing trends." },
+    { text: "It is defined by timeless design, lasting comfort, and pieces you’ll wear forever." },
+    { text: "When someone hears ASDRÉ…" },
+    { text: "We don’t want them to picture a logo." },
+    { text: "We want them to picture a feeling." },
+    { text: "Calm.", accent: true },
+    { text: "Refined.", accent: true },
+    { text: "Considered.", accent: true },
+    { text: "A brand where quality is felt before it is seen." },
   ],
-  closing:
-    "We believe true luxury isn’t defined by loud logos or passing trends, but by timeless design, lasting comfort, and pieces you’ll wear forever.",
-  feeling:
-    "When someone hears ASDRÉ, we don’t want them to picture a logo. We want them to picture a feeling — calm, refined, and considered. A brand that speaks quietly, where quality is felt before it’s seen.",
+  /** The permanent finale — two collections revealed from opposite sides. */
+  finale: [
+    { name: "LÉMAN", subtitle: "Refined everyday essentials.", from: "left" },
+    { name: "RIVIERA", subtitle: "Elevated, timeless elegance.", from: "right" },
+  ],
 } as const;
 
 export const VISION = {

@@ -1,109 +1,293 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import {
+  motion,
+  useMotionTemplate,
+  useMotionValue,
+  useScroll,
+  useSpring,
+  useTransform,
+  type MotionValue,
+} from "framer-motion";
 import { ABOUT } from "@/lib/content";
-import { EASE_LUX, VIEWPORT_ONCE } from "@/lib/motion";
+import { SPRING_SCROLL, SPRING_SOFT } from "@/lib/motion";
+import { useReducedMotionPref } from "@/hooks/useReducedMotionPref";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import { FadeIn } from "@/components/motion/FadeIn";
-import { Reveal } from "@/components/motion/Reveal";
-import { Parallax } from "@/components/motion/Parallax";
+import { cn } from "@/lib/utils";
 
-function ChapterEyebrow({ index, label }: { index: string; label: string }) {
+/**
+ * Section 01 — the founding story, told one line at a time while the section is
+ * pinned. Each line slides in from the left as a left-to-right clip wipe "types"
+ * it (a brand caret rides the reveal edge), holds to be read, then slides out to
+ * the right and fades. Only one line is ever visible; scrolling back reverses it.
+ * After the final line, two collection teasers slide in from opposite sides and
+ * settle. Everything is driven by scroll progress `p`, so it is fully reversible.
+ * Opens seamlessly from the Hero's white "D" portal (matching #fafaf9). Degrades
+ * to a static stacked column under reduced motion.
+ */
+
+const ROMAN = ["I", "II"];
+
+// ── One story line: absolutely stacked & centered; visible only in its window.
+interface StoryLineProps {
+  p: MotionValue<number>;
+  start: number;
+  end: number;
+  text: string;
+  accent?: boolean;
+  showCaret: boolean;
+}
+
+function StoryLine({ p, start, end, text, accent, showCaret }: StoryLineProps) {
+  // Local progress across this line's global window (clamped 0→1).
+  const q = useTransform(p, [start, end], [0, 1]);
+
+  // Slide in from left → hold centered → slide out right (% of full-width root = vw).
+  const x = useTransform(q, [0, 0.16, 0.66, 0.9], ["-64%", "0%", "0%", "64%"]);
+  // Zero at both boundaries → guarantees only one line is ever visible.
+  const opacity = useTransform(q, [0, 0.1, 0.86, 0.9], [0, 1, 1, 0]);
+
+  // Typewriter: reveal fraction f, ending inside the hold plateau (overshoot-safe).
+  const f = useTransform(q, [0.14, 0.44], [0, 1]);
+  const clipRight = useTransform(f, [0, 1], [100, 0]);
+  const clipPath = useMotionTemplate`inset(-6% ${clipRight}% -6% 0%)`;
+  const caretLeft = useTransform(f, [0, 1], ["0%", "100%"]);
+  const caretOpacity = useTransform(q, [0.13, 0.14, 0.62, 0.64], [0, 1, 1, 0]);
+
   return (
-    <div className="mb-10 flex items-center gap-4">
-      <span className="font-mono text-xs tracking-[0.4em] text-brand">{index}</span>
-      <span className="h-px w-12 bg-border" />
-      <span className="font-mono text-xs uppercase tracking-[0.4em] text-muted-foreground">
-        {label}
+    <motion.div
+      aria-hidden="true"
+      style={{ x, opacity }}
+      className="pointer-events-none absolute inset-0 flex items-center justify-center px-6 sm:px-10"
+    >
+      <span className="relative inline-block max-w-full">
+        <motion.p
+          style={{ clipPath, WebkitClipPath: clipPath, willChange: "clip-path" }}
+          className={cn(
+            "m-0 text-center font-serif font-medium leading-[1.25] tracking-tight whitespace-normal text-2xl sm:text-3xl lg:text-[clamp(1.2rem,1.85vw,1.75rem)] lg:leading-[1.2] lg:whitespace-nowrap",
+            accent ? "text-brand" : "text-foreground",
+          )}
+        >
+          {text}
+        </motion.p>
+        {showCaret && (
+          <motion.span
+            aria-hidden="true"
+            style={{ left: caretLeft, opacity: caretOpacity }}
+            className="absolute top-0 h-full w-[2px]"
+          >
+            <span className="block h-full w-full bg-brand [animation:blink_1.05s_steps(1,end)_infinite]" />
+          </motion.span>
+        )}
       </span>
-    </div>
+    </motion.div>
   );
 }
 
-/** Layered alpine silhouettes for parallax depth. */
-function Alps() {
+// ── Persistent, subtle corner heading. Fades in over the Hero→About seam.
+function AboutHeading({ p }: { p: MotionValue<number> }) {
+  const opacity = useTransform(p, [0, 0.05], [0, 1]);
   return (
-    <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[46vh]">
-      <Parallax speed={0.5} className="absolute inset-x-0 bottom-0">
-        <svg viewBox="0 0 1440 320" preserveAspectRatio="none" className="h-[46vh] w-full">
-          <path d="M0 320 L0 190 L280 70 L520 200 L760 60 L1040 210 L1280 110 L1440 200 L1440 320 Z" fill="#e8ecf0" opacity="0.8" />
-        </svg>
-      </Parallax>
-      <Parallax speed={0.28} className="absolute inset-x-0 bottom-0">
-        <svg viewBox="0 0 1440 320" preserveAspectRatio="none" className="h-[40vh] w-full">
-          <path d="M0 320 L0 240 L240 140 L480 250 L720 130 L1000 250 L1220 170 L1440 250 L1440 320 Z" fill="#d6d3d1" opacity="0.85" />
-        </svg>
-      </Parallax>
-      <Parallax speed={0.12} className="absolute inset-x-0 bottom-0">
-        <svg viewBox="0 0 1440 320" preserveAspectRatio="none" className="h-[30vh] w-full">
-          <path d="M0 320 L0 280 L360 210 L680 285 L980 205 L1260 280 L1440 240 L1440 320 Z" fill="#c4c1bf" opacity="0.7" />
-        </svg>
-      </Parallax>
-    </div>
+    <motion.div style={{ opacity }} className="absolute top-24 left-6 z-10 sm:top-28 sm:left-10">
+      <div className="flex items-center gap-4">
+        <span className="font-mono text-xs tracking-[0.4em] text-brand">{ABOUT.index}</span>
+        <span className="h-px w-12 bg-border" />
+        <span className="font-mono text-xs uppercase tracking-[0.4em] text-muted-foreground">
+          {ABOUT.question}
+        </span>
+      </div>
+      <p className="mt-4 font-serif text-sm uppercase tracking-[0.35em] text-foreground/70">
+        {ABOUT.heading}
+      </p>
+    </motion.div>
   );
 }
 
-export function About() {
+// ── One finale card: slides in from its side, settles, keeps a hover tilt.
+interface FinaleCardProps {
+  p: MotionValue<number>;
+  P1: number;
+  u: number;
+  index: number;
+  card: { name: string; subtitle: string; from: "left" | "right" };
+  interactive: boolean;
+}
+
+function FinaleCard({ p, P1, u, index, card, interactive }: FinaleCardProps) {
+  const dir = card.from === "left" ? -1 : 1;
+  const x = useTransform(p, [P1, 0.97 * u], [`${dir * 70}%`, "0%"]);
+  const y = useTransform(p, [P1, 0.97 * u], [24, 0]);
+  const opacity = useTransform(p, [P1, 0.94 * u], [0, 1]);
+
+  // Pointer-driven 3D tilt (desktop only) — mirrors Collections' RotatableSculpture.
+  const rotateX = useMotionValue(0);
+  const rotateY = useMotionValue(0);
+  const srx = useSpring(rotateX, SPRING_SOFT);
+  const sry = useSpring(rotateY, SPRING_SOFT);
+
+  function handleMove(e: React.PointerEvent<HTMLAnchorElement>) {
+    const r = e.currentTarget.getBoundingClientRect();
+    rotateY.set(((e.clientX - r.left) / r.width - 0.5) * 16);
+    rotateX.set(-((e.clientY - r.top) / r.height - 0.5) * 12);
+  }
+  function handleLeave() {
+    rotateX.set(0);
+    rotateY.set(0);
+  }
+
+  return (
+    <motion.a
+      href="#collections"
+      onPointerMove={interactive ? handleMove : undefined}
+      onPointerLeave={interactive ? handleLeave : undefined}
+      style={{
+        x,
+        y,
+        opacity,
+        rotateX: interactive ? srx : undefined,
+        rotateY: interactive ? sry : undefined,
+        transformPerspective: 1000,
+      }}
+      className="group flex flex-col items-center gap-3 rounded-[2rem] border border-border/60 bg-card/40 p-9 text-center backdrop-blur-md transition-colors [transform-style:preserve-3d] hover:border-brand/40 max-md:backdrop-blur-none sm:p-12"
+    >
+      <span className="font-mono text-xs tracking-[0.4em] text-brand">{ROMAN[index]}</span>
+      <span className="font-serif text-4xl tracking-[0.18em] text-foreground sm:text-5xl">
+        {card.name}
+      </span>
+      <span className="text-sm text-muted-foreground">{card.subtitle}</span>
+    </motion.a>
+  );
+}
+
+function FinaleCards({
+  p,
+  P1,
+  u,
+  interactive,
+}: {
+  p: MotionValue<number>;
+  P1: number;
+  u: number;
+  interactive: boolean;
+}) {
+  // Only clickable once revealed — resolved on the compositor, no React state.
+  const pointerEvents = useTransform(p, (v) => (v >= P1 ? "auto" : "none"));
+  return (
+    <motion.div
+      style={{ pointerEvents }}
+      className="absolute inset-0 flex items-center justify-center px-6 sm:px-10"
+    >
+      <div className="grid w-full max-w-4xl gap-6 sm:grid-cols-2">
+        {ABOUT.finale.map((card, i) => (
+          <FinaleCard key={card.name} p={p} P1={P1} u={u} index={i} card={card} interactive={interactive} />
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Reduced-motion fallback: no pin, all lines stacked, static cards.
+function StaticAbout() {
   return (
     <section
       id="about"
       aria-labelledby="about-heading"
       className="relative flex min-h-screen w-full flex-col justify-center overflow-hidden py-32 sm:py-40"
     >
-      <Alps />
-
       <div className="relative z-10 mx-auto w-full max-w-4xl px-6 sm:px-10">
-        <FadeIn>
-          <ChapterEyebrow index="01" label={ABOUT.question} />
-        </FadeIn>
-
+        <div className="mb-10 flex items-center gap-4">
+          <span className="font-mono text-xs tracking-[0.4em] text-brand">{ABOUT.index}</span>
+          <span className="h-px w-12 bg-border" />
+          <span className="font-mono text-xs uppercase tracking-[0.4em] text-muted-foreground">
+            {ABOUT.question}
+          </span>
+        </div>
         <h2 id="about-heading" className="sr-only">
-          About ASDRÉ
+          {ABOUT.heading}
         </h2>
 
-        {/* Cinematic founding story, revealed line by line */}
-        <div className="space-y-3 sm:space-y-4">
-          {ABOUT.story.map((line, i) => (
-            <Reveal
-              key={i}
-              as="p"
-              text={line}
-              delay={i * 0.04}
-              className="font-serif text-[1.7rem] font-medium leading-[1.25] tracking-tight text-foreground sm:text-4xl lg:text-[2.75rem]"
-              tokenClassName={i === 1 || i === 2 ? "text-brand" : undefined}
-            />
+        <div className="space-y-4">
+          {ABOUT.lines.map((line, i) => (
+            <FadeIn key={i} delay={i * 0.03}>
+              <p
+                className={cn(
+                  "font-serif text-2xl font-medium leading-[1.3] tracking-tight sm:text-3xl",
+                  "accent" in line && line.accent ? "text-brand" : "text-foreground",
+                )}
+              >
+                {line.text}
+              </p>
+            </FadeIn>
           ))}
         </div>
 
-        <FadeIn delay={0.1} className="mt-16 max-w-2xl">
-          <p className="text-lg leading-relaxed text-secondary-foreground/80">{ABOUT.closing}</p>
-        </FadeIn>
-
-        <FadeIn delay={0.15} className="mt-8 max-w-2xl">
-          <p className="text-base leading-relaxed text-muted-foreground">{ABOUT.feeling}</p>
-        </FadeIn>
-
-        {/* Two-collection tease */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={VIEWPORT_ONCE}
-          transition={{ duration: 0.9, ease: EASE_LUX }}
-          className="mt-20 grid gap-6 sm:grid-cols-2"
-        >
-          {[
-            { name: "LÉMAN", note: "Refined everyday essentials." },
-            { name: "RIVIERA", note: "Elevated, timeless elegance." },
-          ].map((c) => (
-            <a
-              key={c.name}
-              href="#collections"
-              className="group rounded-3xl border border-border/60 bg-card/40 p-7 backdrop-blur-sm transition-colors hover:border-brand/40"
-            >
-              <span className="font-serif text-2xl tracking-[0.2em] text-foreground">{c.name}</span>
-              <span className="mt-2 block text-sm text-muted-foreground">{c.note}</span>
-            </a>
+        <div className="mt-16 grid gap-6 sm:grid-cols-2">
+          {ABOUT.finale.map((card, i) => (
+            <FadeIn key={card.name} delay={i * 0.1}>
+              <a
+                href="#collections"
+                className="group flex flex-col items-center gap-3 rounded-[2rem] border border-border/60 bg-card/40 p-9 text-center transition-colors hover:border-brand/40 sm:p-12"
+              >
+                <span className="font-mono text-xs tracking-[0.4em] text-brand">{ROMAN[i]}</span>
+                <span className="font-serif text-4xl tracking-[0.18em] text-foreground sm:text-5xl">
+                  {card.name}
+                </span>
+                <span className="text-sm text-muted-foreground">{card.subtitle}</span>
+              </a>
+            </FadeIn>
           ))}
-        </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function About() {
+  const ref = useRef<HTMLElement>(null);
+  const { reduced } = useReducedMotionPref();
+  const isMobile = useIsMobile(); // 768 — tilt + track length
+  const isCompact = useIsMobile(1024); // <lg wraps lines → hide the single-line caret
+
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end start"],
+  });
+  const p = useSpring(scrollYProgress, SPRING_SCROLL);
+
+  // Bands as fractions of the sticky unpin point so they auto-scale to TRACK.
+  const track = isMobile ? 560 : 750;
+  const u = (track - 100) / track;
+  const P0 = 0.06 * u;
+  const P1 = 0.9 * u;
+  const W = (P1 - P0) / ABOUT.lines.length;
+
+  if (reduced) return <StaticAbout />;
+
+  return (
+    <section id="about" ref={ref} aria-labelledby="about-heading" className="relative h-[560vh] md:h-[750vh]">
+      <div className="sticky top-0 flex h-screen w-full items-center justify-center overflow-hidden bg-[#fafaf9]">
+        <h2 id="about-heading" className="sr-only">
+          {ABOUT.heading}
+        </h2>
+        <span className="sr-only">{ABOUT.lines.map((l) => l.text).join(" ")}</span>
+
+        <AboutHeading p={p} />
+
+        {ABOUT.lines.map((line, i) => (
+          <StoryLine
+            key={i}
+            p={p}
+            start={P0 + i * W}
+            end={P0 + (i + 1) * W}
+            text={line.text}
+            accent={"accent" in line ? line.accent : undefined}
+            showCaret={!isCompact}
+          />
+        ))}
+
+        <FinaleCards p={p} P1={P1} u={u} interactive={!isMobile} />
       </div>
     </section>
   );
