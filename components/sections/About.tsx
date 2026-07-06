@@ -48,8 +48,8 @@ function StoryLine({ p, start, end, text, accent }: StoryLineProps) {
   // Zero at both boundaries → guarantees only one block is ever visible. Fast exit.
   const opacity = useTransform(q, [0, 0.07, 0.88, 0.94], [0, 1, 1, 0]);
 
-  // Very fast type, then a long hold to read, then a very fast disappear.
-  const f = useTransform(q, [0.07, 0.18], [0, 1]);
+  // Longer, deliberate type; then a hold to read, then a very fast disappear.
+  const f = useTransform(q, [0.07, 0.42], [0, 1]);
   const clipRight = useTransform(f, [0, 1], [100, 0]);
   const clipPath = useMotionTemplate`inset(-6% ${clipRight}% -6% 0%)`;
   const caretLeft = useTransform(f, [0, 1], ["0%", "100%"]);
