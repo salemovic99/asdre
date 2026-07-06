@@ -255,7 +255,7 @@ export function About() {
   const p = useSpring(scrollYProgress, SPRING_SCROLL);
 
   // Bands as fractions of the sticky unpin point so they auto-scale to TRACK.
-  const track = isMobile ? 680 : 900;
+  const track = isMobile ? 900 : 1200;
   const u = (track - 100) / track;
   const P0 = 0.06 * u;
   const P1 = 0.9 * u;
@@ -264,7 +264,7 @@ export function About() {
   if (reduced) return <StaticAbout />;
 
   return (
-    <section id="about" ref={ref} aria-labelledby="about-heading" className="relative h-[680vh] md:h-[900vh]">
+    <section id="about" ref={ref} aria-labelledby="about-heading" className="relative h-[900vh] md:h-[1200vh]">
       <div className="sticky top-0 flex h-screen w-full items-center justify-center overflow-hidden bg-[#fafaf9]">
         <h2 id="about-heading" className="sr-only">
           {ABOUT.heading}
