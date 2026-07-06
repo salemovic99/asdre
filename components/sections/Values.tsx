@@ -4,8 +4,6 @@ import { VALUES } from "@/lib/content";
 import { SectionShell } from "@/components/layout/SectionShell";
 import { Reveal } from "@/components/motion/Reveal";
 import { FadeIn } from "@/components/motion/FadeIn";
-import { FloatingObject } from "@/components/motion/FloatingObject";
-import { Crystal } from "@/components/visual/Shapes";
 
 export function Values() {
   return (
@@ -23,11 +21,6 @@ export function Values() {
             04 — {VALUES.eyebrow}
           </span>
         </FadeIn>
-
-        {/* The single crystal — slow, considered */}
-        <FloatingObject rotateDuration={30} spin="y" amplitude={12} className="mb-14">
-          <Crystal className="h-[34vh] max-h-[300px] w-auto" />
-        </FloatingObject>
 
         <Reveal
           as="h2"
