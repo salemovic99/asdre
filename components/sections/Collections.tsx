@@ -62,7 +62,7 @@ function RotatableSculpture({ tone }: { tone: "cool" | "warm" }) {
         rotateY.set(0);
       }}
     >
-      <Sculpture tone={tone} className="h-[40vh] max-h-[380px] w-auto" />
+      
     </motion.div>
   );
 }
@@ -225,9 +225,7 @@ function StaticCollections() {
                   : "bg-[linear-gradient(160deg,rgba(247,237,224,0.9),rgba(255,255,255,0.6))]",
               )}
             >
-              <div className="flex min-h-[34vh] items-center justify-center">
-                <Sculpture tone={c.tone} className="h-[34vh] max-h-[300px] w-auto" />
-              </div>
+              
               <div className="flex flex-col items-center">
                 <span
                   className="font-mono text-xs tracking-[0.4em]"
