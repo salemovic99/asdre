@@ -43,17 +43,19 @@ function StoryLine({ p, start, end, text, accent }: StoryLineProps) {
   // Local progress across this line's global window (clamped 0→1).
   const q = useTransform(p, [start, end], [0, 1]);
 
-  // Slide in from left → hold centered → snap out right (% of full-width root = vw).
-  const x = useTransform(q, [0, 0.11, 0.86, 0.94], ["-64%", "0%", "0%", "64%"]);
-  // Zero at both boundaries → guarantees only one block is ever visible. Fast exit.
-  const opacity = useTransform(q, [0, 0.07, 0.88, 0.94], [0, 1, 1, 0]);
+  // Slide in from the left → hold centered → slide fully off to the right while
+  // staying visible (% of the full-width root = vw, so 100% clears the screen).
+  const x = useTransform(q, [0, 0.07, 0.7, 0.96], ["-64%", "0%", "0%", "100%"]);
+  // Stay opaque through the whole rightward slide; only cut once it's off-screen,
+  // so you watch the line travel out before the next one enters.
+  const opacity = useTransform(q, [0, 0.06, 0.93, 0.97], [0, 1, 1, 0]);
 
-  // Longer, deliberate type; then a hold to read, then a very fast disappear.
-  const f = useTransform(q, [0.07, 0.42], [0, 1]);
+  // Slow, deliberate typing; the caret rides the edge, then clears before the slide.
+  const f = useTransform(q, [0.07, 0.55], [0, 1]);
   const clipRight = useTransform(f, [0, 1], [100, 0]);
   const clipPath = useMotionTemplate`inset(-6% ${clipRight}% -6% 0%)`;
   const caretLeft = useTransform(f, [0, 1], ["0%", "100%"]);
-  const caretOpacity = useTransform(q, [0.05, 0.07, 0.85, 0.87], [0, 1, 1, 0]);
+  const caretOpacity = useTransform(q, [0.05, 0.07, 0.68, 0.7], [0, 1, 1, 0]);
 
   return (
     <motion.div
@@ -253,7 +255,7 @@ export function About() {
   const p = useSpring(scrollYProgress, SPRING_SCROLL);
 
   // Bands as fractions of the sticky unpin point so they auto-scale to TRACK.
-  const track = isMobile ? 560 : 750;
+  const track = isMobile ? 680 : 900;
   const u = (track - 100) / track;
   const P0 = 0.06 * u;
   const P1 = 0.9 * u;
@@ -262,7 +264,7 @@ export function About() {
   if (reduced) return <StaticAbout />;
 
   return (
-    <section id="about" ref={ref} aria-labelledby="about-heading" className="relative h-[560vh] md:h-[750vh]">
+    <section id="about" ref={ref} aria-labelledby="about-heading" className="relative h-[680vh] md:h-[900vh]">
       <div className="sticky top-0 flex h-screen w-full items-center justify-center overflow-hidden bg-[#fafaf9]">
         <h2 id="about-heading" className="sr-only">
           {ABOUT.heading}
