@@ -122,8 +122,10 @@ function Scene({ p, start, end, variant, text, left, right, accent, dark, isMobi
   const rightX = useTransform(q, [0.2, 1], ["8%", `${splay}%`]);
   const spotOpacity = useTransform(q, [0, 0.2, 0.8, 1], [0, 0.9, 0.9, 0]);
 
+  // `filter: "none"` on mobile explicitly clears any blur Framer applied on the
+  // first (pre-mount, isMobile=false) render — Framer won't reset an omitted value.
   const rootStyle = isMobile
-    ? { scale, opacity }
+    ? { scale, opacity, filter: "none" }
     : { scale, opacity, translateZ, filter, transformPerspective: 1200, willChange: "transform, opacity, filter" };
 
   const color = accent ? "text-[#6366f1]" : dark ? "text-white/80" : "text-[#fafaf9]";

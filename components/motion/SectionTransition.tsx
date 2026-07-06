@@ -57,15 +57,17 @@ export function SectionTransition({
   const rotate = useTransform(progress, [0, 1], rotateRange);
 
   if (reduced) {
+    // `filter: "none"` explicitly clears any blur Framer set on a prior render —
+    // it does NOT reset a style value once you stop passing it (would stick).
     return (
-      <motion.div style={{ opacity, willChange: "opacity" }} className={className}>
+      <motion.div style={{ opacity, filter: "none", willChange: "opacity" }} className={className}>
         {children}
       </motion.div>
     );
   }
 
   const style = isMobile
-    ? { scale, opacity, rotate, willChange: "transform, opacity" }
+    ? { scale, opacity, rotate, filter: "none", willChange: "transform, opacity" }
     : {
         scale,
         opacity,
