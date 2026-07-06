@@ -37,24 +37,23 @@ interface StoryLineProps {
   end: number;
   text: string;
   accent?: boolean;
-  showCaret: boolean;
 }
 
-function StoryLine({ p, start, end, text, accent, showCaret }: StoryLineProps) {
+function StoryLine({ p, start, end, text, accent }: StoryLineProps) {
   // Local progress across this line's global window (clamped 0→1).
   const q = useTransform(p, [start, end], [0, 1]);
 
-  // Slide in from left → hold centered → slide out right (% of full-width root = vw).
-  const x = useTransform(q, [0, 0.16, 0.66, 0.9], ["-64%", "0%", "0%", "64%"]);
-  // Zero at both boundaries → guarantees only one line is ever visible.
-  const opacity = useTransform(q, [0, 0.1, 0.86, 0.9], [0, 1, 1, 0]);
+  // Slide in from left → hold centered → snap out right (% of full-width root = vw).
+  const x = useTransform(q, [0, 0.11, 0.86, 0.94], ["-64%", "0%", "0%", "64%"]);
+  // Zero at both boundaries → guarantees only one block is ever visible. Fast exit.
+  const opacity = useTransform(q, [0, 0.07, 0.88, 0.94], [0, 1, 1, 0]);
 
-  // Typewriter: reveal fraction f, ending inside the hold plateau (overshoot-safe).
-  const f = useTransform(q, [0.14, 0.44], [0, 1]);
+  // Very fast type, then a long hold to read, then a very fast disappear.
+  const f = useTransform(q, [0.07, 0.18], [0, 1]);
   const clipRight = useTransform(f, [0, 1], [100, 0]);
   const clipPath = useMotionTemplate`inset(-6% ${clipRight}% -6% 0%)`;
   const caretLeft = useTransform(f, [0, 1], ["0%", "100%"]);
-  const caretOpacity = useTransform(q, [0.13, 0.14, 0.62, 0.64], [0, 1, 1, 0]);
+  const caretOpacity = useTransform(q, [0.05, 0.07, 0.85, 0.87], [0, 1, 1, 0]);
 
   return (
     <motion.div
@@ -62,25 +61,23 @@ function StoryLine({ p, start, end, text, accent, showCaret }: StoryLineProps) {
       style={{ x, opacity }}
       className="pointer-events-none absolute inset-0 flex items-center justify-center px-6 sm:px-10"
     >
-      <span className="relative inline-block max-w-full">
+      <span className="relative inline-block">
         <motion.p
           style={{ clipPath, WebkitClipPath: clipPath, willChange: "clip-path" }}
           className={cn(
-            "m-0 text-center font-serif font-medium leading-[1.25] tracking-tight whitespace-normal text-2xl sm:text-3xl lg:text-[clamp(1.2rem,1.85vw,1.75rem)] lg:leading-[1.2] lg:whitespace-nowrap",
+            "m-0 max-w-[22ch] text-center text-balance font-serif text-[1.9rem] font-medium leading-[1.15] tracking-tight sm:max-w-[26ch] sm:text-4xl lg:max-w-[32ch] lg:text-5xl lg:leading-[1.1]",
             accent ? "text-brand" : "text-foreground",
           )}
         >
           {text}
         </motion.p>
-        {showCaret && (
-          <motion.span
-            aria-hidden="true"
-            style={{ left: caretLeft, opacity: caretOpacity }}
-            className="absolute top-0 h-full w-[2px]"
-          >
-            <span className="block h-full w-full bg-brand [animation:blink_1.05s_steps(1,end)_infinite]" />
-          </motion.span>
-        )}
+        <motion.span
+          aria-hidden="true"
+          style={{ left: caretLeft, opacity: caretOpacity }}
+          className="absolute top-0 h-full w-[3px]"
+        >
+          <span className="block h-full w-full bg-brand [animation:blink_1.05s_steps(1,end)_infinite]" />
+        </motion.span>
       </span>
     </motion.div>
   );
@@ -248,7 +245,6 @@ export function About() {
   const ref = useRef<HTMLElement>(null);
   const { reduced } = useReducedMotionPref();
   const isMobile = useIsMobile(); // 768 — tilt + track length
-  const isCompact = useIsMobile(1024); // <lg wraps lines → hide the single-line caret
 
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -283,7 +279,6 @@ export function About() {
             end={P0 + (i + 1) * W}
             text={line.text}
             accent={"accent" in line ? line.accent : undefined}
-            showCaret={!isCompact}
           />
         ))}
 
