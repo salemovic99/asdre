@@ -40,9 +40,7 @@ function RotatableSculpture({ tone }: { tone: "cool" | "warm" }) {
   const srx = useSpring(rotateX, SPRING_SOFT);
   const sry = useSpring(rotateY, SPRING_SOFT);
 
-  if (!interactive) {
-    return <Sculpture tone={tone} className="h-[40vh] max-h-[380px] w-auto" />;
-  }
+  
 
   return (
     <motion.div
