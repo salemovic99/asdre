@@ -12,6 +12,7 @@ import { BRAND } from "@/lib/content";
 import { EASE_LUX, SPRING_SCROLL } from "@/lib/motion";
 import { useReducedMotionPref } from "@/hooks/useReducedMotionPref";
 import { useMouseParallax } from "@/hooks/useMouseParallax";
+import { ArrowRight } from "lucide-react";
 import { ScrollMouse } from "@/components/visual/ScrollMouse";
 import { LogoReveal } from "@/components/visual/LogoReveal";
 import { Button } from "@/components/ui/button";
@@ -117,26 +118,36 @@ export function Hero() {
             ))}
           </h2>
 
-          <motion.p
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.1, delay: HEADLINE_DELAY + 0.4, ease: EASE_LUX }}
-            className="mt-7 max-w-md text-base text-muted-foreground sm:text-lg"
+            className="mt-8 flex flex-col items-center gap-3.5"
           >
-            {BRAND.heroSubtitle}
-          </motion.p>
+            <span
+              aria-hidden="true"
+              className="h-px w-12 bg-gradient-to-r from-transparent via-brand/55 to-transparent"
+            />
+            <p className="max-w-md font-serif text-lg italic leading-relaxed tracking-wide text-foreground/75 sm:text-xl">
+              {BRAND.heroSubtitle}
+            </p>
+          </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.1, delay: HEADLINE_DELAY + 0.6, ease: EASE_LUX }}
-            className="mt-10"
+            className="mt-11"
           >
             <Button
               render={<a href="#about" />}
-              className="h-12 rounded-full bg-primary px-8 text-sm font-medium tracking-wide text-primary-foreground transition-all duration-300 hover:bg-primary/85 hover:shadow-[0_16px_40px_-16px_rgba(28,25,23,0.6)]"
+              className="group h-14 gap-4 rounded-full bg-primary py-0 pr-3 pl-8 text-sm font-medium tracking-[0.02em] text-primary-foreground shadow-[0_12px_34px_-14px_rgba(28,25,23,0.55)] transition-all duration-500 ease-out hover:-translate-y-0.5 hover:shadow-[0_26px_52px_-18px_rgba(79,70,229,0.5)]"
             >
-              {BRAND.heroCta}
+              <span>{BRAND.heroCta}</span>
+              <span className="relative flex size-9 items-center justify-center overflow-hidden rounded-full bg-brand text-brand-foreground">
+                <ArrowRight className="size-4 transition-transform duration-500 ease-out group-hover:translate-x-6 group-hover:-translate-y-6" />
+                <ArrowRight className="absolute size-4 -translate-x-6 translate-y-6 transition-transform duration-500 ease-out group-hover:translate-x-0 group-hover:translate-y-0" />
+              </span>
             </Button>
           </motion.div>
         </motion.div>

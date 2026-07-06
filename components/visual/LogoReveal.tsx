@@ -31,7 +31,7 @@ const LETTERS = Array.from(BRAND.name);
 
 export function LogoReveal({ reduced = false }: { reduced?: boolean }) {
   return (
-    <h1 className="font-serif text-6xl font-medium leading-none tracking-[0.12em] text-foreground sm:text-8xl lg:text-9xl">
+    <h1 className="font-serif text-[clamp(3.5rem,16vw,12rem)] font-medium leading-[0.95] tracking-[0.08em] text-foreground">
       {/* Read as one word by assistive tech; the flipping glyphs are decorative. */}
       <span className="sr-only">{BRAND.name}</span>
 
