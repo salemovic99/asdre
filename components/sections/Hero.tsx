@@ -127,7 +127,7 @@ export function Hero() {
 
           {/* supporting copy — dissolves as one group; the logo is excluded */}
           <motion.div style={textStyle} className="flex flex-col items-center">
-            <h2 className="mt-8 max-w-[18ch] font-serif text-2xl font-medium leading-tight tracking-tight text-foreground/90 sm:text-3xl lg:text-4xl">
+            <h2 className="mt-8 font-serif text-xl font-medium leading-tight tracking-[0.18em] whitespace-nowrap text-foreground/90 sm:text-2xl md:text-3xl lg:text-4xl">
               {words.map((word, i) => (
                 <span key={`${word}-${i}`} className="inline-block overflow-hidden pb-[0.06em] align-bottom">
                   <motion.span
