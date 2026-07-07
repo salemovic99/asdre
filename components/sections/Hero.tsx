@@ -49,6 +49,7 @@ export function Hero() {
   const auraX = useTransform(mx, [-0.5, 0.5], ["-8%", "8%"]);
   const auraY = useTransform(my, [-0.5, 0.5], ["-6%", "6%"]);
   const auraOpacity = useTransform(p, [0.08, 0.42], [0.55, 0]);
+  const auraScale = useSpring(useTransform(p, [0.08, 0.6], [1, 1.6]), SPRING_SCROLL);
 
   // Portal overlays: indigo light bloom, then the white seam into About.
   const bloomOpacity = useTransform(p, [0.3, 0.5, 0.62], [0, 0.6, 0]);
@@ -76,7 +77,7 @@ export function Hero() {
           style={
             reduced
               ? { opacity: 0.5 }
-              : { x: auraX, y: auraY, opacity: auraOpacity }
+              : { x: auraX, y: auraY, scale: auraScale, opacity: auraOpacity }
           }
           className="pointer-events-none absolute top-[42%] left-1/2 size-[70vw] max-w-[720px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(99,102,241,0.20),rgba(99,102,241,0.06)_45%,transparent_70%)] blur-[60px]"
         />
