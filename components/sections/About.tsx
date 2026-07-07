@@ -43,6 +43,7 @@ interface Beat {
   right?: string;
   accent?: boolean;
   dark?: boolean;
+  overlap?: number; // per-beat window widening; defaults to the global OVERLAP
 }
 
 // Flat, constant-length beat list (stable hook order). Windows are fractions of u.
@@ -62,9 +63,11 @@ const BEATS: Beat[] = [
   { variant: "sentence", text: "Lasting comfort.", startK: 0.695, endK: 0.725 },
   { variant: "sentence", text: "Pieces you’ll wear forever.", startK: 0.725, endK: 0.755 },
   { variant: "sentence", text: "When someone hears ASDRÉ…", dark: true, startK: 0.755, endK: 0.8 },
-  { variant: "word", text: "Calm.", accent: true, startK: 0.8, endK: 0.82 },
-  { variant: "word", text: "Refined.", accent: true, startK: 0.82, endK: 0.84 },
-  { variant: "word", text: "Considered.", accent: true, startK: 0.84, endK: 0.86 },
+  // Longer windows + zero overlap → each word fully clears before the next
+  // appears (a clean disappear-then-read, not a crossfade of all three).
+  { variant: "word", text: "Calm.", accent: true, startK: 0.8, endK: 0.827, overlap: 0 },
+  { variant: "word", text: "Refined.", accent: true, startK: 0.827, endK: 0.853, overlap: 0 },
+  { variant: "word", text: "Considered.", accent: true, startK: 0.853, endK: 0.88, overlap: 0 },
 ];
 
 // Editorial type scales — desktop huge; clamp mins keep them from overflowing mobile.
@@ -426,8 +429,8 @@ export function About() {
           <Scene
             key={i}
             p={p}
-            start={b.startK * u - OVERLAP}
-            end={b.endK * u + OVERLAP}
+            start={b.startK * u - (b.overlap ?? OVERLAP)}
+            end={b.endK * u + (b.overlap ?? OVERLAP)}
             variant={b.variant}
             text={b.text}
             left={b.left}
