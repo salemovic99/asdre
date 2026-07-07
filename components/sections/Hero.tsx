@@ -183,7 +183,7 @@ export function Hero() {
           <motion.div
             aria-hidden="true"
             style={{ opacity: bloomOpacity, scale: bloomScale, willChange: "opacity, transform" }}
-            className="pointer-events-none fixed inset-0 z-[30] mix-blend-screen bg-[radial-gradient(circle_at_50%_48%,rgba(99,102,241,0.55),rgba(99,102,241,0.12)_38%,transparent_62%)]"
+            className="pointer-events-none fixed inset-0 z-[30] bg-[radial-gradient(circle_at_50%_48%,rgba(203,207,255,0.62),rgba(129,132,247,0.14)_38%,transparent_62%)]"
           />
           <motion.div
             aria-hidden="true"
