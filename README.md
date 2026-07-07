@@ -1,6 +1,6 @@
 # ASDRÉ — Designed For Forever
 
-An immersive, cinematic storytelling website for **ASDRÉ**, a quiet-luxury fashion house inspired by Swiss design and timeless style. Rather than a conventional landing page, the experience is a single vertical journey where the user appears to **dive through portals into a floating geometric object**, discovering the brand's story one deeper layer at a time.
+An immersive, cinematic storytelling website for **ASDRÉ**, a quiet-luxury fashion house inspired by Swiss design and timeless style. Rather than a conventional landing page, the experience is a single vertical journey of pinned, scroll-driven chapters — each a distinct cinematic set-piece (a portal dive, a flight through deep space, a horizontal camera pan, a word-by-word illumination) — that reveal the brand's story one deeper layer at a time.
 
 > _Quiet Luxury · Swiss Minimalism · Timeless · Calm · Made For You_
 
@@ -8,18 +8,18 @@ An immersive, cinematic storytelling website for **ASDRÉ**, a quiet-luxury fash
 
 ## The Experience
 
-The site is one continuous scroll composed of eight chapters. Sections never break hard — each dissolves into the next as the "camera" flies through it (scale + blur + depth), so the whole thing reads like descending deeper into the ASDRÉ world.
+The site is one continuous scroll composed of eight chapters. Sections never break hard — most dissolve into the next as the "camera" flies through them (scale + blur + depth), while several run their own bespoke pinned rigs, so the whole thing reads like descending deeper into the ASDRÉ world. The chapters also breathe light → dark → light: a warm-white overture, a dark deep-space About, a light middle (Vision · Mission · Values · Collections), then a dark Coming Soon + Contact close.
 
 | # | Chapter | Answers | Signature moment |
 |---|---------|---------|------------------|
-| 00 | **Hero** | Welcome to ASDRÉ | Floating glass orb, mouse-reactive; camera dives *into* it on scroll |
-| 01 | **About** | Who are we? | Founding story revealed word-by-word over parallax alpine silhouettes |
-| 02 | **Vision** | Where are we going? | One statement over a slowly rotating infinite ring |
+| 00 | **Hero** | Welcome to ASDRÉ | 3D letter-flip wordmark + pointer-reactive indigo aura; the camera flies *into* the letter **D** as a portal into About |
+| 01 | **About** | Who are we? | **Dark** flight through deep space — the founding story streams past as typographic beats (`translateZ` + depth blur) over a starfield, landing on the ASDRÉ logo + collection teasers |
+| 02 | **Vision** | Where are we going? | A single serif statement resolving through the portal dive |
 | 03 | **Mission** | Why were we created? | Self-drawing fabric-fold lines + animated pillars |
-| 04 | **Values** | What do we believe? | A single value — _Attention to Detail_ — with a floating faceted crystal |
-| 05 | **Collections** | What do we create? | **LÉMAN** (cool) & **RIVIERA** (warm) with pointer-rotatable sculptures |
-| 06 | **Coming Soon** | What comes next? | Dark immersive room, particles, spotlight, countdown placeholder |
-| 07 | **Contact** | Why should you care? | Minimal floating glass business card that tilts to the pointer |
+| 04 | **Values** | What do we believe? | _Attention to Detail_ — the statement inks in word-by-word as you scroll, key words glowing indigo |
+| 05 | **Collections** | What do we create? | Pinned horizontal camera pan from **LÉMAN** (cool) to **RIVIERA** (warm) as the light shifts cool → warm |
+| 06 | **Coming Soon** | What comes next? | **Dark** finale — cursor spotlight, drifting particles, a shimmering countdown |
+| 07 | **Contact** | Why should you care? | **Dark** cinematic close — cursor spotlight, particle field, magnetic email rows (mailto + copy-to-clipboard) |
 
 Fixed wayfinding sits above it all: a minimal top bar with the full chapter index (Sheet), a whisper-thin scroll progress bar, and a vertical chapter rail.
 
@@ -51,7 +51,7 @@ Fixed wayfinding sits above it all: a minimal top bar with the full chapter inde
 
 - **Typography** — Playfair Display (serif display headings), Inter (sans body), JetBrains Mono (uppercase tracked labels & chapter numbers).
 - **Style** — very subtle _Liquid Glass_ (glassmorphism), soft gradients, film-grain overlay, blur crossfades, massive whitespace, Swiss grid.
-- Fixed **warm-white brand** (no dark mode); a class-scoped `dark` variant is overridden so OS dark-mode never alters the palette.
+- Fixed **warm-white brand** (no OS dark mode); a class-scoped `dark` variant is overridden so OS dark-mode never alters the palette. Individual chapters (**About · Coming Soon · Contact**) deliberately use a near-black `#0C0A09` canvas for contrast — set with explicit colors, not a theme switch.
 
 All tokens live in [`app/globals.css`](app/globals.css) under `@theme`, so every shadcn component inherits the brand automatically.
 
@@ -71,7 +71,7 @@ components/
   navigation/         # ChapterNav (Sheet), ChapterProgress rail, ReduceMotionToggle
   sections/           # Hero, About, Vision, Mission, Values, Collections, ComingSoon, Contact
   motion/             # FadeIn, Reveal, Parallax, SectionTransition, FloatingObject, ScrollProgress
-  visual/             # Shapes.tsx — GlassOrb, Crystal, InfiniteRing, Sculpture, ParticleField
+  visual/             # LogoReveal, ScrollMouse, Shapes (ParticleField, MountainSilhouette, Sculpture, glass primitives)
 hooks/                # useReducedMotionPref, useIsMobile, useMouseParallax,
                       #   useSectionScroll, useActiveChapter, useLenis
 lib/                  # utils (cn), chapters, content (all copy), motion (easings/springs)
@@ -79,9 +79,9 @@ lib/                  # utils (cn), chapters, content (all copy), motion (easing
 
 `app/layout.tsx` and `app/page.tsx` stay Server Components; all interactivity lives under one client tree (`StoryExperience`). Reusable motion primitives (`components/motion/*`) each consult the reduced-motion preference and degrade gracefully.
 
-### The portal transition
+### Pinned scroll rigs
 
-Each pinned chapter is a tall scroll runway (`~180vh`) holding a sticky full-viewport panel. Per-section `useScroll` progress (spring-smoothed) drives `scale → blur → opacity → translateZ`, so the outgoing section flies toward the camera while the next emerges from depth. This lives in [`components/motion/SectionTransition.tsx`](components/motion/SectionTransition.tsx), productized via [`SectionShell`](components/layout/SectionShell.tsx).
+Every chapter is a tall scroll runway holding a sticky full-viewport panel, with spring-smoothed `useScroll` progress driving the motion. **Vision** and **Mission** use the shared "portal dive" — [`SectionTransition`](components/motion/SectionTransition.tsx) productized via [`SectionShell`](components/layout/SectionShell.tsx) — where `scale → blur → opacity → translateZ` flies the outgoing panel toward the camera while the next emerges from depth. **Hero**, **About**, **Values**, **Collections**, **Coming Soon** and **Contact** each implement a bespoke rig on the same idiom: the letter-**D** portal, the deep-space beat flight, the word-illumination scrub, and the cool → warm horizontal pan. All read raw scroll via [`useSectionScroll`](hooks/useSectionScroll.ts) and degrade to static layouts under reduced motion.
 
 ---
 
