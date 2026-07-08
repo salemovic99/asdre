@@ -28,7 +28,7 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  /* ASDRÉ brand indigo — used sparingly for accents, glows, focus */
+  /* ASDRÉ brand wine — used sparingly for accents, glows, focus */
   --color-brand: var(--brand);
   --color-brand-soft: var(--brand-soft);
   --color-brand-foreground: var(--brand-foreground);
@@ -47,11 +47,11 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.4);
 
-  /* Soft shadows + indigo glow */
+  /* Soft shadows + wine glow */
   --shadow-soft: 0 1px 2px rgb(28 25 23 / 0.04), 0 12px 32px -12px rgb(28 25 23 / 0.10);
   --shadow-glass: 0 8px 40px -12px rgb(28 25 23 / 0.14);
   --shadow-lift: 0 24px 70px -24px rgb(28 25 23 / 0.22);
-  --shadow-glow: 0 0 60px -8px rgb(79 70 229 / 0.30);
+  --shadow-glow: 0 0 60px -8px rgb(165 64 82 / 0.30);
 }
 
 :root {
@@ -62,10 +62,10 @@
   --card-foreground: #0c0a09;
   --popover: #ffffff;
   --popover-foreground: #0c0a09;
-  --primary: #1c1917;
-  --primary-foreground: #fafaf9;
-  --secondary: #f5f5f4;
-  --secondary-foreground: #1c1917;
+  --primary: #a54052;
+  --primary-foreground: #fee8d2;
+  --secondary: #fee8d2;
+  --secondary-foreground: #a54052;
   --muted: #e8ecf0;
   --muted-foreground: #57534e;
   /* shadcn component-internal accent stays neutral (hover fills etc.) */
@@ -74,13 +74,13 @@
   --destructive: oklch(0.577 0.245 27.325);
   --border: #d6d3d1;
   --input: #e7e5e4;
-  /* Indigo focus ring */
-  --ring: #4f46e5;
+  /* Wine focus ring */
+  --ring: #a54052;
 
-  /* Brand indigo (foreground accents / glows) */
-  --brand: #4f46e5;
-  --brand-soft: #6366f1;
-  --brand-foreground: #ffffff;
+  /* Brand wine (foreground accents / glows) */
+  --brand: #a54052;
+  --brand-soft: #c25a6d;
+  --brand-foreground: #fee8d2;
 
   --radius: 0.875rem;
 }

@@ -26,7 +26,7 @@ import { useIsMobile } from "@/hooks/useIsMobile";
  * reversible; degrades to a static stacked layout under reduced motion.
  */
 
-const COOL = "#4f46e5";
+const COOL = "#a54052";
 const WARM = "#c98a2b";
 
 /** A rotatable sculpture — follows the pointer across the panel (desktop only). */

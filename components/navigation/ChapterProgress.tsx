@@ -11,7 +11,7 @@ import {
 
 /**
  * Fixed vertical chapter rail (desktop only). Each node marks a chapter; the
- * active one elongates and lights indigo. Nodes are anchor links (glide via
+ * active one elongates and lights wine. Nodes are anchor links (glide via
  * Lenis) — the progress rail supplements, but never replaces, real navigation.
  */
 export function ChapterProgress() {

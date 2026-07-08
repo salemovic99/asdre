@@ -19,12 +19,12 @@ import { useIsMobile } from "@/hooks/useIsMobile";
  * Values — a content-first "word-illumination" scrub. The statement sits still
  * and perfectly legible; as the section scrolls, the body sentence lights up
  * one word at a time — muted gray → full ink — beneath a clean serif title, with
- * key words ("considered", "feel", "name") glowing indigo as they land. A thin
+ * key words ("considered", "feel", "name") glowing wine as they land. A thin
  * rail tracks the reveal. Modern, editorial, always readable. Fully scroll-driven
  * and reversible; degrades to a static, fully-lit layout under reduced motion.
  */
 
-const BRAND = "#4f46e5";
+const BRAND = "#a54052";
 const DIM = "#d6d3d1"; // unlit gray (border token)
 const INK = "#0c0a09"; // lit foreground
 

@@ -4,7 +4,7 @@ import { motion, useScroll, useSpring } from "framer-motion";
 import { SPRING_SCROLL } from "@/lib/motion";
 
 /**
- * A whisper-thin indigo progress bar pinned to the very top of the viewport,
+ * A whisper-thin wine progress bar pinned to the very top of the viewport,
  * tracking overall scroll through the story. Purely decorative wayfinding —
  * the value is a smoothed document scroll progress.
  */

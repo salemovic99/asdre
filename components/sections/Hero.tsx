@@ -17,10 +17,10 @@ import { ScrollMouse } from "@/components/visual/ScrollMouse";
 import { LogoReveal } from "@/components/visual/LogoReveal";
 
 /**
- * The overture — the wordmark floating in light with a pointer-tracked indigo
+ * The overture — the wordmark floating in light with a pointer-tracked wine
  * aura. On scroll the camera flies INTO the letter "D": the D zooms into its
  * own white counter (a portal) while the other letters and copy streak past,
- * an indigo bloom flares, and a white seam blooms open into the About section.
+ * an wine bloom flares, and a white seam blooms open into the About section.
  * About is the same warm white (#fafaf9), so the handoff is invisible — you
  * travel through the logo into the rest of the site. Fully scroll-driven and
  * reversible; degrades to a plain crossfade under reduced motion.
@@ -51,7 +51,7 @@ export function Hero() {
   const auraOpacity = useTransform(p, [0.08, 0.42], [0.55, 0]);
   const auraScale = useSpring(useTransform(p, [0.08, 0.6], [1, 1.6]), SPRING_SCROLL);
 
-  // Portal overlays: indigo light bloom, then the white seam into About.
+  // Portal overlays: wine light bloom, then the white seam into About.
   const bloomOpacity = useTransform(p, [0.3, 0.5, 0.62], [0, 0.6, 0]);
   const bloomScale = useTransform(p, [0.3, 0.62], [1, 3.2]);
   const whiteout = useTransform(p, [0.5, 0.6, 0.66, 0.93], [0, 1, 1, 0]);
@@ -71,7 +71,7 @@ export function Hero() {
   return (
     <section id="hero" ref={ref} className={`relative ${trackHeight}`}>
       <div className="sticky top-0 flex h-screen w-full items-center justify-center overflow-hidden">
-        {/* soft indigo aura — focal light + bloom, tracks the pointer */}
+        {/* soft wine aura — focal light + bloom, tracks the pointer */}
         <motion.div
           aria-hidden="true"
           style={
@@ -175,7 +175,7 @@ export function Hero() {
 
       {/* Portal overlays — rendered OUTSIDE the sticky/transformed layers so
           position:fixed stays glued to the viewport through the sticky unpin.
-          The indigo bloom flares as the camera nears the aperture; the white
+          The wine bloom flares as the camera nears the aperture; the white
           seam (#fafaf9) blooms to full over the unpin, then dissolves to reveal
           About rising from pure white. */}
       {!reduced && (

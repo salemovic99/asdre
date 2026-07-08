@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
  * Each shape is a self-contained, theme-aware "sculpture" for a chapter.
  */
 
-/** Hero — a floating glass sphere with soft refraction and an indigo core. */
+/** Hero — a floating glass sphere with soft refraction and an wine core. */
 export function GlassOrb({ className }: { className?: string }) {
   return (
     <div className={cn("relative aspect-square", className)}>
@@ -15,7 +15,7 @@ export function GlassOrb({ className }: { className?: string }) {
       <div className="absolute inset-[-18%] rounded-full bg-[radial-gradient(circle,rgba(99,102,241,0.28),transparent_60%)] blur-2xl" />
       {/* the sphere */}
       <div className="absolute inset-0 rounded-full bg-[radial-gradient(38%_38%_at_34%_28%,#ffffff_0%,rgba(255,255,255,0.65)_18%,rgba(232,236,240,0.5)_44%,rgba(212,211,209,0.35)_70%,rgba(28,25,23,0.10)_100%)] shadow-[0_40px_120px_-30px_rgba(28,25,23,0.45)] ring-1 ring-white/50 backdrop-blur-sm">
-        {/* inner indigo caustic */}
+        {/* inner wine caustic */}
         <div className="absolute inset-[16%] rounded-full bg-[radial-gradient(circle_at_66%_70%,rgba(79,70,229,0.35),transparent_58%)] blur-md" />
         {/* specular highlight */}
         <div className="absolute left-[22%] top-[16%] h-[26%] w-[34%] rounded-full bg-white/70 blur-md" />
@@ -45,8 +45,8 @@ export function Crystal({ className }: { className?: string }) {
           <stop offset="1" stopColor="#c9c7f2" />
         </linearGradient>
         <linearGradient id="crys-c" x1="0" y1="1" x2="1" y2="0">
-          <stop offset="0" stopColor="#4f46e5" stopOpacity="0.55" />
-          <stop offset="1" stopColor="#6366f1" stopOpacity="0.15" />
+          <stop offset="0" stopColor="#a54052" stopOpacity="0.55" />
+          <stop offset="1" stopColor="#c25a6d" stopOpacity="0.15" />
         </linearGradient>
         <filter id="crys-shadow" x="-40%" y="-20%" width="180%" height="150%">
           <feDropShadow dx="0" dy="26" stdDeviation="24" floodColor="#1c1917" floodOpacity="0.22" />
@@ -86,7 +86,7 @@ export function Sculpture({
 }) {
   const from = tone === "cool" ? "#eef1f6" : "#f7ede0";
   const mid = tone === "cool" ? "#c9cdf1" : "#f0d3a6";
-  const accent = tone === "cool" ? "#4f46e5" : "#c98a2b";
+  const accent = tone === "cool" ? "#a54052" : "#c98a2b";
   const gid = `scl-${tone}`;
   return (
     <svg
@@ -155,7 +155,7 @@ export function ParticleField({ count = 42, className }: { count?: number; class
 
 /**
  * A subtle alpine ridge silhouette for the dark "Swiss Alps" scene. Layered
- * peaks fade from indigo-tinted dark up into the void, following the house
+ * peaks fade from wine-tinted dark up into the void, following the house
  * gradient + soft-shadow convention.
  */
 export function MountainSilhouette({ className }: { className?: string }) {
@@ -168,7 +168,7 @@ export function MountainSilhouette({ className }: { className?: string }) {
     >
       <defs>
         <linearGradient id="ridge-back" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#4f46e5" stopOpacity="0.35" />
+          <stop offset="0" stopColor="#a54052" stopOpacity="0.35" />
           <stop offset="1" stopColor="#0c0a09" stopOpacity="0.9" />
         </linearGradient>
         <linearGradient id="ridge-front" x1="0" y1="0" x2="0" y2="1">

@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
  * A modern, minimal scroll cue shaped like a mouse: a slim rounded capsule with
  * a wheel-dot that travels down and fades on a loop. Rendered as a real anchor
  * to the first chapter, so it is clickable and keyboard-focusable. On hover the
- * body lifts, its rim warms to the brand indigo and gains a soft focus ring, and
+ * body lifts, its rim warms to the brand wine and gains a soft focus ring, and
  * the label sharpens — a quiet, premium interaction.
  */
 export function ScrollMouse({

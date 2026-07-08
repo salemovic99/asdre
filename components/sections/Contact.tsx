@@ -20,7 +20,7 @@ import { useIsMobile } from "@/hooks/useIsMobile";
 
 /**
  * The closing screen — a dark, cinematic finale that doubles as the footer.
- * An indigo spotlight follows the cursor over a near-black field of drifting
+ * An wine spotlight follows the cursor over a near-black field of drifting
  * particles; the statement drifts with the pointer; email rows are magnetic and
  * offer both a mailto link and a copy-to-clipboard button. Degrades gracefully:
  * no magnetism/parallax under reduced motion or on touch, but copy still works.
@@ -131,7 +131,7 @@ export function Contact() {
       }
       className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-[#0c0a09] px-6 py-32 text-[#fafaf9]"
     >
-      {/* cursor-tracked indigo spotlight (rests centered) */}
+      {/* cursor-tracked wine spotlight (rests centered) */}
       <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center">
         <motion.div
           aria-hidden="true"
@@ -176,7 +176,7 @@ export function Contact() {
       {/* content */}
       <div className="relative z-10 flex w-full max-w-3xl flex-col items-center text-center">
         <FadeIn>
-          <span className="font-mono text-xs uppercase tracking-[0.5em] text-[#6366f1]">
+          <span className="font-mono text-xs uppercase tracking-[0.5em] text-[#c25a6d]">
             07 — Contact
           </span>
         </FadeIn>
@@ -205,7 +205,7 @@ export function Contact() {
           {CONTACT.emails.map((email, i) => (
             <FadeIn key={email} delay={0.1 + i * 0.06} className="w-full">
               <Magnetic disabled={!interactive} className="w-full">
-                <div className="group flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.04] py-2.5 pr-2.5 pl-5 backdrop-blur-md transition-colors hover:border-[#4f46e5]/50 max-md:backdrop-blur-none">
+                <div className="group flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.04] py-2.5 pr-2.5 pl-5 backdrop-blur-md transition-colors hover:border-[#a54052]/50 max-md:backdrop-blur-none">
                   <a
                     href={`mailto:${email}`}
                     className="flex-1 truncate text-left font-mono text-sm text-white/80 transition-colors group-hover:text-white focus-visible:text-white focus-visible:outline-none"
@@ -216,7 +216,7 @@ export function Contact() {
                     type="button"
                     onClick={() => copyEmail(email)}
                     aria-label={copied === email ? "Copied" : "Copy email address"}
-                    className="flex size-10 shrink-0 items-center justify-center rounded-full text-white/50 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366f1]"
+                    className="flex size-10 shrink-0 items-center justify-center rounded-full text-white/50 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c25a6d]"
                   >
                     <AnimatePresence mode="wait" initial={false}>
                       {copied === email ? (
@@ -227,7 +227,7 @@ export function Contact() {
                           exit={{ scale: 0.6, opacity: 0 }}
                           transition={{ duration: 0.18 }}
                         >
-                          <Check className="size-4 text-[#6366f1]" aria-hidden="true" />
+                          <Check className="size-4 text-[#c25a6d]" aria-hidden="true" />
                         </motion.span>
                       ) : (
                         <motion.span
@@ -245,7 +245,7 @@ export function Contact() {
                   <a
                     href={`mailto:${email}`}
                     aria-label={`Email ${email}`}
-                    className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white/5 text-white/70 transition-colors hover:bg-[#4f46e5] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366f1]"
+                    className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white/5 text-white/70 transition-colors hover:bg-[#a54052] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c25a6d]"
                   >
                     <Mail className="size-4" aria-hidden="true" />
                   </a>
@@ -258,7 +258,7 @@ export function Contact() {
         <FadeIn delay={0.4} className="mt-16">
           <div className="flex flex-col items-center gap-3 font-mono text-[10px] uppercase tracking-[0.3em] text-white/40 sm:flex-row sm:gap-6">
             <span className="inline-flex items-center gap-2">
-              <MapPin className="size-3.5 text-[#6366f1]" aria-hidden="true" />
+              <MapPin className="size-3.5 text-[#c25a6d]" aria-hidden="true" />
               {CONTACT.location}
             </span>
             <span className="hidden text-white/20 sm:inline">·</span>

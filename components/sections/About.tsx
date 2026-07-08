@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils";
  * and its white portal flash dissolves to reveal this dark space; the camera then
  * keeps moving FORWARD. Each beat's typography emerges from deep space, flies
  * toward and past the camera (CSS translateZ + depth-of-field blur), and dissolves.
- * A persistent particle starfield + drifting indigo light bridge the beats into one
+ * A persistent particle starfield + drifting wine light bridge the beats into one
  * continuous forward flight. Ends with a soft light, the ASDRÉ logo, a closing line,
  * and the LÉMAN/RIVIERA collection teasers. Fully scroll-driven and reversible;
  * degrades to a dark static column under reduced motion.
@@ -131,7 +131,7 @@ function Scene({ p, start, end, variant, text, left, right, accent, dark, isMobi
     ? { scale, opacity, filter: "none" }
     : { scale, opacity, translateZ, filter, transformPerspective: 1200, willChange: "transform, opacity, filter" };
 
-  const color = accent ? "text-[#6366f1]" : dark ? "text-white/80" : "text-[#fafaf9]";
+  const color = accent ? "text-[#c25a6d]" : dark ? "text-white/80" : "text-[#fafaf9]";
 
   return (
     <motion.div
@@ -203,7 +203,7 @@ function EnvStarfield({ p, u, isMobile }: { p: MotionValue<number>; u: number; i
   );
 }
 
-// ── Environment: two slow-drifting indigo glows (volumetric light).
+// ── Environment: two slow-drifting wine glows (volumetric light).
 function EnvGlows({ p, u }: { p: MotionValue<number>; u: number }) {
   const ax = useTransform(p, [0, u], ["-6%", "10%"]);
   const ay = useTransform(p, [0, u], ["8%", "-12%"]);
@@ -290,9 +290,9 @@ function FinaleCard({ p, u, index, card, interactive }: FinaleCardProps) {
         rotateY: interactive ? sry : undefined,
         transformPerspective: 1000,
       }}
-      className="group flex flex-col items-center gap-3 rounded-[2rem] border border-white/12 bg-white/[0.04] p-9 text-center backdrop-blur-md transition-colors [transform-style:preserve-3d] hover:border-[#4f46e5]/50 max-md:backdrop-blur-none sm:p-12"
+      className="group flex flex-col items-center gap-3 rounded-[2rem] border border-white/12 bg-white/[0.04] p-9 text-center backdrop-blur-md transition-colors [transform-style:preserve-3d] hover:border-[#a54052]/50 max-md:backdrop-blur-none sm:p-12"
     >
-      <span className="font-mono text-xs tracking-[0.4em] text-[#6366f1]">{ROMAN[index]}</span>
+      <span className="font-mono text-xs tracking-[0.4em] text-[#c25a6d]">{ROMAN[index]}</span>
       <span className="font-serif text-4xl tracking-[0.18em] text-[#fafaf9] sm:text-5xl">{card.name}</span>
       <span className="text-sm text-white/55">{card.subtitle}</span>
     </motion.a>
@@ -356,7 +356,7 @@ function StaticAbout() {
     >
       <div className="relative z-10 mx-auto w-full max-w-3xl px-6 text-center sm:px-10">
         <div className="mb-12 flex items-center justify-center gap-4">
-          <span className="font-mono text-xs tracking-[0.4em] text-[#6366f1]">{ABOUT.index}</span>
+          <span className="font-mono text-xs tracking-[0.4em] text-[#c25a6d]">{ABOUT.index}</span>
           <span className="h-px w-12 bg-white/20" />
           <span className="font-mono text-xs uppercase tracking-[0.4em] text-white/50">{ABOUT.question}</span>
         </div>
@@ -370,7 +370,7 @@ function StaticAbout() {
               <p
                 className={cn(
                   "font-serif text-2xl font-medium leading-snug tracking-tight sm:text-3xl",
-                  l.accent ? "text-[#6366f1]" : "text-[#fafaf9]",
+                  l.accent ? "text-[#c25a6d]" : "text-[#fafaf9]",
                 )}
               >
                 {l.text}
@@ -384,9 +384,9 @@ function StaticAbout() {
             <FadeIn key={card.name} delay={i * 0.1}>
               <a
                 href="#collections"
-                className="group flex flex-col items-center gap-3 rounded-[2rem] border border-white/12 bg-white/[0.04] p-9 text-center transition-colors hover:border-[#4f46e5]/50 sm:p-12"
+                className="group flex flex-col items-center gap-3 rounded-[2rem] border border-white/12 bg-white/[0.04] p-9 text-center transition-colors hover:border-[#a54052]/50 sm:p-12"
               >
-                <span className="font-mono text-xs tracking-[0.4em] text-[#6366f1]">{ROMAN[i]}</span>
+                <span className="font-mono text-xs tracking-[0.4em] text-[#c25a6d]">{ROMAN[i]}</span>
                 <span className="font-serif text-4xl tracking-[0.18em] text-[#fafaf9] sm:text-5xl">{card.name}</span>
                 <span className="text-sm text-white/55">{card.subtitle}</span>
               </a>

@@ -91,7 +91,7 @@ export function ComingSoon() {
         transition={reduced ? undefined : { duration: 70, repeat: Infinity, ease: "linear" }}
       />
 
-      {/* cursor-tracked indigo spotlight (rests centered) */}
+      {/* cursor-tracked wine spotlight (rests centered) */}
       <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center">
         <motion.div
           aria-hidden="true"
@@ -136,7 +136,7 @@ export function ComingSoon() {
           whileInView={{ scaleX: 1, opacity: 1 }}
           viewport={VIEWPORT_ONCE}
           transition={{ duration: 1, delay: 0.3, ease: EASE_LUX }}
-          className="mt-12 h-px w-24 origin-center bg-gradient-to-r from-transparent via-[#6366f1]/70 to-transparent"
+          className="mt-12 h-px w-24 origin-center bg-gradient-to-r from-transparent via-[#c25a6d]/70 to-transparent"
         />
 
         <div className="mt-12">
