@@ -143,7 +143,7 @@ export function Hero() {
               ))}
             </h2>
 
-            <motion.div
+            {/* <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.1, delay: HEADLINE_DELAY + 0.4, ease: EASE_LUX }}
@@ -158,7 +158,7 @@ export function Hero() {
               </p>
             </motion.div>
           </motion.div>
-        </motion.div>
+        </motion.div> */}
 
         {/* modern mouse scroll cue */}
         <motion.div
