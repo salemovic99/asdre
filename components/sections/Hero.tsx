@@ -156,9 +156,9 @@ export function Hero() {
               <p className="max-w-md font-serif text-lg italic leading-relaxed tracking-wide text-foreground/75 sm:text-xl">
                 {BRAND.heroSubtitle}
               </p>
-            </motion.div>
+            </motion.div>*/}
           </motion.div>
-        </motion.div> */}
+        </motion.div> 
 
         {/* modern mouse scroll cue */}
         <motion.div
