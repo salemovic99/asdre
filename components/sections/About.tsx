@@ -55,7 +55,7 @@ const BEATS: Beat[] = [
   { variant: "sentence", text: "Founded by", startK: 0.2, endK: 0.255 },
   { variant: "pair", left: "Saudi", right: "Egyptian", startK: 0.255, endK: 0.335 },
   { variant: "sentence", text: "They met while studying in Leysin.", startK: 0.335, endK: 0.405 },
-  { variant: "special6", text: "Swiss Alps", startK: 0.405, endK: 0.49 },
+  { variant: "listWord", text: "Swiss Alps", startK: 0.405, endK: 0.49 },
   { variant: "listWord", text: "Swiss Design", startK: 0.49, endK: 0.526 },
   { variant: "listWord", text: "Timeless Style", startK: 0.526, endK: 0.562 },
   { variant: "listWord", text: "Exceptional Quality", startK: 0.562, endK: 0.598 },

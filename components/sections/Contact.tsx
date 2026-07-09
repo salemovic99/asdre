@@ -191,7 +191,7 @@ export function Contact() {
             text={CONTACT.lead}
             splitBy="word"
             stagger={0.08}
-            className="font-serif text-[clamp(3rem,11vw,8rem)] font-medium leading-[0.95] tracking-tight text-[#fafaf9]"
+            className="font-serif text-[clamp(3rem,11vw,8rem)] font-medium leading-[0.95] tracking-tight text-primary"
           />
         </motion.div>
 
