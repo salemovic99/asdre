@@ -46,7 +46,7 @@ export function ChapterNav() {
         <a
           href="#hero"
           aria-label="Asdré — top of story"
-          className="font-logo text-lg font-semibold tracking-normal text-foreground transition-opacity hover:opacity-70"
+          className="font-logo text-3xl font-normal leading-none tracking-normal text-foreground transition-opacity hover:opacity-70"
         >
           Asdré
         </a>
