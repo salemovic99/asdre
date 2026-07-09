@@ -19,10 +19,11 @@ import { useIsMobile } from "@/hooks/useIsMobile";
 /**
  * Patience — the held breath between the hero dive and the founding story.
  *
- * A dark iris opens from behind the type and swallows the warm-white room; the
- * second line is revealed inside it. The wipe rhymes with the hero's dive
- * through the counter of the D, and carries the hero's white flash down into
- * About's deep space.
+ * The white room states it plainly — "We Are In Development" — over a quiet
+ * second line. Then a dark iris opens from behind the type and swallows the
+ * room, revealing the closing line inside it. The wipe rhymes with the hero's
+ * dive through the counter of the D, and carries the hero's white flash down
+ * into About's deep space.
  *
  * Two rules hold this together:
  *
@@ -41,6 +42,14 @@ import { useIsMobile } from "@/hooks/useIsMobile";
 // leaves margin for iOS's URL-bar viewport wobble.
 const IRIS_MAX_VMAX = 80;
 
+// The headline that names the moment.
+const HEADING_CLS =
+  "max-w-[13ch] font-serif text-[clamp(2.25rem,8vw,5.5rem)] font-medium leading-[1.02] tracking-tight";
+// The poetic line beneath it — deliberately subordinate. Colour is supplied at
+// the call site: this line sits on white when animated, on black when static.
+const LINE1_CLS =
+  "max-w-[30ch] font-serif text-[clamp(1.05rem,2.6vw,1.6rem)] font-medium leading-[1.4] tracking-tight";
+// The line that lives inside the iris.
 const LINE_CLS =
   "max-w-[22ch] font-serif text-[clamp(1.6rem,5vw,3.25rem)] font-medium leading-[1.25] tracking-tight sm:max-w-[26ch]";
 
@@ -52,6 +61,7 @@ function ScrubWord({
   total,
   start,
   end,
+  wordClassName,
 }: {
   p: MotionValue<number>;
   word: string;
@@ -59,6 +69,8 @@ function ScrubWord({
   total: number;
   start: number;
   end: number;
+  /** Sits on the animated span — a gradient fill must own the faded element. */
+  wordClassName?: string;
 }) {
   const slice = (end - start) / total;
   const wStart = start + index * slice;
@@ -70,7 +82,7 @@ function ScrubWord({
     <span className="inline-block overflow-hidden pb-[0.14em] -mb-[0.14em]">
       <motion.span
         style={{ y, opacity, willChange: "transform" }}
-        className="inline-block"
+        className={`inline-block ${wordClassName ?? ""}`}
       >
         {word}
       </motion.span>
@@ -85,6 +97,9 @@ function ScrubLine({
   band,
   hold,
   className,
+  wordClassName,
+  as = "p",
+  id,
 }: {
   p: MotionValue<number>;
   text: string;
@@ -93,13 +108,18 @@ function ScrubLine({
   /** [holdEnd, gone] — the line fades and drifts out across this window. */
   hold: [number, number];
   className: string;
+  wordClassName?: string;
+  as?: "p" | "h2";
+  id?: string;
 }) {
   const opacity = useTransform(p, [hold[0], hold[1]], [1, 0]);
   const y = useTransform(p, [hold[0], hold[1]], [0, -24]);
   const words = text.split(" ");
+  const Tag = as === "h2" ? motion.h2 : motion.p;
 
   return (
-    <motion.p
+    <Tag
+      id={id}
       aria-label={text}
       style={{ opacity, y, willChange: "transform" }}
       className={className}
@@ -118,10 +138,11 @@ function ScrubLine({
             total={words.length}
             start={band[0]}
             end={band[1]}
+            wordClassName={wordClassName}
           />
         ))}
       </span>
-    </motion.p>
+    </Tag>
   );
 }
 
@@ -150,17 +171,19 @@ function StaticPatience() {
         <ParticleField count={26} />
       </div>
 
-      <h2 id="patience-heading" className="sr-only">
-        {PATIENCE.heading}
-      </h2>
-
-      <div className="relative z-10 flex flex-col items-center gap-10">
+      <div className="relative z-10 flex flex-col items-center gap-8">
         <FadeIn>
           <Eyebrow />
         </FadeIn>
 
         <FadeIn delay={0.1}>
-          <p className={`${LINE_CLS} text-[#fafaf9]`}>{PATIENCE.line1}</p>
+          <h2 id="patience-heading" className={`${HEADING_CLS} brand-gradient-text`}>
+            {PATIENCE.heading}
+          </h2>
+        </FadeIn>
+
+        <FadeIn delay={0.2}>
+          <p className={`${LINE1_CLS} text-[#fafaf9]/60`}>{PATIENCE.line1}</p>
         </FadeIn>
 
         <span
@@ -168,8 +191,8 @@ function StaticPatience() {
           className="h-px w-24 bg-gradient-to-r from-transparent via-[#c25a6d]/70 to-transparent"
         />
 
-        <FadeIn delay={0.2}>
-          <p className={`${LINE_CLS} text-[#fafaf9]/70`}>{PATIENCE.line2}</p>
+        <FadeIn delay={0.3}>
+          <p className={`${LINE_CLS} text-[#fafaf9]`}>{PATIENCE.line2}</p>
         </FadeIn>
       </div>
     </section>
@@ -193,23 +216,25 @@ export function Patience() {
   const u = (track - 100) / track;
   const k = (n: number) => n * u;
 
-  const eyebrowOpacity = useTransform(p, [k(0.02), k(0.1), k(0.22), k(0.3)], [0, 1, 1, 0]);
-  const eyebrowY = useTransform(p, [k(0.02), k(0.1)], [14, 0]);
+  // The white room reads top-down: eyebrow, headline, then the quiet line.
+  const eyebrowOpacity = useTransform(p, [k(0.02), k(0.08), k(0.3), k(0.36)], [0, 1, 1, 0]);
+  const eyebrowY = useTransform(p, [k(0.02), k(0.08)], [14, 0]);
 
-  // The aperture. Line 1 must be gone by k(0.40) — the iris eats the centre first.
-  const r = useTransform(p, [k(0.4), k(0.58), k(0.7)], [0, 34, IRIS_MAX_VMAX]);
+  // The aperture. Everything in the white room is gone by k(0.46) — the iris
+  // eats the centre first, so nothing may still be standing there.
+  const r = useTransform(p, [k(0.46), k(0.62), k(0.76)], [0, 34, IRIS_MAX_VMAX]);
   const iris = useMotionTemplate`circle(${r}vmax at 50% 50%)`;
 
   // A wine flare at the moment the aperture breaks open.
-  const flareOpacity = useTransform(p, [k(0.38), k(0.42), k(0.48)], [0, 0.9, 0]);
-  const flareScale = useTransform(p, [k(0.38), k(0.48)], [0.6, 1.15]);
+  const flareOpacity = useTransform(p, [k(0.44), k(0.48), k(0.54)], [0, 0.9, 0]);
+  const flareScale = useTransform(p, [k(0.44), k(0.54)], [0.6, 1.15]);
 
   // Unclipped, composited. Both wait until the iris has covered the corners,
   // so neither is ever seen against the white room.
-  const glowOpacity = useTransform(p, [k(0.62), k(0.76), k(0.92), k(1)], [0, 0.85, 0.85, 0]);
-  const glowScale = useTransform(p, [k(0.62), k(0.95)], [0.7, 1.12]);
-  const particleOpacity = useTransform(p, [k(0.66), k(0.8), k(0.92), k(1)], [0, 1, 1, 0]);
-  const particleY = useTransform(p, [k(0.4), k(1)], [0, -40]);
+  const glowOpacity = useTransform(p, [k(0.68), k(0.8), k(0.92), k(1)], [0, 0.85, 0.85, 0]);
+  const glowScale = useTransform(p, [k(0.68), k(0.95)], [0.7, 1.12]);
+  const particleOpacity = useTransform(p, [k(0.72), k(0.84), k(0.92), k(1)], [0, 1, 1, 0]);
+  const particleY = useTransform(p, [k(0.46), k(1)], [0, -40]);
 
   if (reduced) return <StaticPatience />;
 
@@ -222,10 +247,6 @@ export function Patience() {
       className={`relative w-full bg-[#0c0a09] ${isMobile ? "h-[220vh]" : "h-[260vh]"}`}
     >
       <div className="sticky top-0 h-screen w-full overflow-hidden">
-        <h2 id="patience-heading" className="sr-only">
-          {PATIENCE.heading}
-        </h2>
-
         {/* z-5 — the warm-white room. Static fill; the iris does all the work. */}
         <div aria-hidden="true" className="absolute inset-0 z-[5] bg-[#fafaf9]">
           {/* dot-grid carries its own mask, so it lives on a child, never on a
@@ -233,17 +254,30 @@ export function Patience() {
           <div className="dot-grid pointer-events-none absolute inset-0" />
         </div>
 
-        <div className="absolute inset-0 z-[5] flex flex-col items-center justify-center gap-10 px-6 text-center sm:px-10">
+        <div className="absolute inset-0 z-[5] flex flex-col items-center justify-center gap-7 px-6 text-center sm:gap-8 sm:px-10">
           <motion.div style={{ opacity: eyebrowOpacity, y: eyebrowY }}>
             <Eyebrow />
           </motion.div>
 
+          {/* The gradient sits on each word, not the heading — a parent-level
+              fill cannot be faded by a child's animated opacity. */}
+          <ScrubLine
+            as="h2"
+            id="patience-heading"
+            p={p}
+            text={PATIENCE.heading}
+            band={[k(0.05), k(0.2)]}
+            hold={[k(0.34), k(0.44)]}
+            className={HEADING_CLS}
+            wordClassName="brand-gradient-text"
+          />
+
           <ScrubLine
             p={p}
             text={PATIENCE.line1}
-            band={[k(0.06), k(0.22)]}
-            hold={[k(0.3), k(0.4)]}
-            className={`${LINE_CLS} text-foreground`}
+            band={[k(0.2), k(0.34)]}
+            hold={[k(0.36), k(0.46)]}
+            className={`${LINE1_CLS} text-foreground/70`}
           />
         </div>
 
@@ -279,7 +313,7 @@ export function Patience() {
           <ScrubLine
             p={p}
             text={PATIENCE.line2}
-            band={[k(0.5), k(0.74)]}
+            band={[k(0.58), k(0.8)]}
             hold={[k(0.92), k(1)]}
             className={`${LINE_CLS} text-[#fafaf9]`}
           />

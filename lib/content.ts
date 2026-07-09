@@ -45,7 +45,7 @@ export const VISION = {
  */
 export const PATIENCE = {
   eyebrow: "Interlude",
-  heading: "A note on patience",
+  heading: "We Are In Development",
   line1: "Every timeless masterpiece begins with patience.",
   line2:
     "ASDRÉ is currently crafting every detail with care. True luxury cannot be rushed.",
