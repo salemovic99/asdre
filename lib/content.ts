@@ -44,7 +44,6 @@ export const VISION = {
  * carries the message; there is almost no copy by design.
  */
 export const HOURGLASS = {
-  eyebrow: "The Countdown",
   heading: "Craftsmanship cannot be rushed",
   /** The odometer is decorative; this is what assistive tech is told instead. */
   countdownLabel: "A countdown to the beginning of the story, animating as you scroll.",

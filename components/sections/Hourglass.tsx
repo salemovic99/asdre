@@ -34,10 +34,6 @@ function StaticHourglass() {
         {HOURGLASS.heading}
       </h2>
 
-      <span className="font-mono text-xs uppercase tracking-[0.5em] text-brand">
-        {HOURGLASS.eyebrow}
-      </span>
-
       <p className="sr-only">{HOURGLASS.countdownLabel}</p>
       <StaticOdometer />
     </section>
@@ -58,7 +54,6 @@ export function Hourglass() {
 
   const seconds = useTransform(p, [k(0.12), k(0.72)], [COUNTDOWN_SECONDS, 0]);
 
-  const eyebrowOpacity = useTransform(p, [k(0.02), k(0.08), k(0.8), k(0.86)], [0, 1, 1, 0]);
   const clockOpacity = useTransform(p, [k(0.05), k(0.14), k(0.84), k(0.92)], [0, 1, 1, 0]);
   // The timer settles into place, then draws a breath as it lands on zero.
   const clockScale = useTransform(p, [k(0.05), k(0.14), k(0.72), k(0.9)], [0.94, 1, 1, 1.06]);
@@ -74,6 +69,12 @@ export function Hourglass() {
   // The fog: a solid panel, landing before the unpin so the seam is white-on-white.
   const fogOpacity = useTransform(p, [k(0.86), k(0.94)], [0, 1]);
 
+  // Once the panel unpins it keeps painting above Patience (see the z-[2] note),
+  // and would cut a shrinking white band across Patience's darkening iris. Fade
+  // it the moment it releases — invisible, since Patience's identical white room
+  // is directly beneath by then.
+  const panelOpacity = useTransform(p, [u, u + 0.04], [1, 0]);
+
   if (reduced) return <StaticHourglass />;
 
   return (
@@ -81,22 +82,24 @@ export function Hourglass() {
       ref={ref}
       id="hourglass"
       aria-labelledby="hourglass-heading"
-      className={`relative w-full bg-[#fafaf9] ${isMobile ? "h-[240vh]" : "h-[300vh]"}`}
+      // The last 100vh of this section is the sticky child's unpin travel — flat
+      // white, and unshrinkable (the strip is always `track − (track − 100)`).
+      // Pull Patience up into it instead. Two things make that safe: z-[2] keeps
+      // this section painting above Patience while the child is still pinned, and
+      // the room's white lives on the child rather than the section, so once the
+      // child slides away Patience shows through instead of an opaque base.
+      className={`relative z-[2] -mb-[100vh] w-full ${isMobile ? "h-[240vh]" : "h-[300vh]"}`}
     >
-      <div className="sticky top-0 h-screen w-full overflow-hidden">
+      <motion.div
+        style={{ opacity: panelOpacity, willChange: "opacity" }}
+        className="sticky top-0 h-screen w-full overflow-hidden bg-[#fafaf9]"
+      >
         <h2 id="hourglass-heading" className="sr-only">
           {HOURGLASS.heading}
         </h2>
         <p className="sr-only">{HOURGLASS.countdownLabel}</p>
 
-        <div className="relative z-[1] flex h-full w-full flex-col items-center justify-center gap-14 px-6">
-          <motion.span
-            style={{ opacity: eyebrowOpacity }}
-            className="font-mono text-xs uppercase tracking-[0.5em] text-brand"
-          >
-            {HOURGLASS.eyebrow}
-          </motion.span>
-
+        <div className="relative z-[1] flex h-full w-full items-center justify-center px-6">
           <div className="relative">
             {/* The flare rides behind the digits as the last second falls.
                 Centring lives on this wrapper — a Tailwind translate would be
@@ -136,7 +139,7 @@ export function Hourglass() {
           style={{ opacity: fogOpacity, willChange: "opacity" }}
           className="pointer-events-none absolute inset-0 z-[6] bg-[#fafaf9]"
         />
-      </div>
+      </motion.div>
     </section>
   );
 }
