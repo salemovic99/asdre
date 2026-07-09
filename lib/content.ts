@@ -40,11 +40,11 @@ export const VISION = {
 } as const;
 
 /**
- * The hourglass chapter — the emotional bridge out of the hero. The countdown
- * and the falling sand carry the message; there is almost no copy by design.
+ * The countdown chapter — the emotional bridge out of the hero. The timer
+ * carries the message; there is almost no copy by design.
  */
 export const HOURGLASS = {
-  eyebrow: "The Hourglass",
+  eyebrow: "The Countdown",
   heading: "Craftsmanship cannot be rushed",
   /** The odometer is decorative; this is what assistive tech is told instead. */
   countdownLabel: "A countdown to the beginning of the story, animating as you scroll.",
