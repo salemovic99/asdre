@@ -46,7 +46,7 @@ export function ChapterNav() {
         <a
           href="#hero"
           aria-label="Asdré — top of story"
-          className="font-logo text-3xl font-normal leading-none tracking-normal text-foreground transition-opacity hover:opacity-70"
+          className="font-logo text-3xl font-normal leading-none tracking-normal text-primary transition-opacity hover:opacity-70"
         >
           Asdré
         </a>
@@ -72,7 +72,7 @@ export function ChapterNav() {
               className="w-full gap-0 border-border/60 bg-background/95 backdrop-blur-2xl sm:max-w-md"
             >
               <SheetHeader className="p-8 pb-4">
-                <SheetTitle className="font-logo text-2xl tracking-normal">
+                <SheetTitle className="font-logo text-2xl tracking-normal text-primary">
                   Asdré
                 </SheetTitle>
                 <SheetDescription className="font-mono text-[11px] uppercase tracking-[0.3em]">

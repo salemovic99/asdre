@@ -262,7 +262,7 @@ export function Contact() {
               {CONTACT.location}
             </span>
             <span className="hidden text-white/20 sm:inline">·</span>
-            <span>© {new Date().getFullYear()} <span className="font-logo normal-case">Asdré</span> — Designed For Forever</span>
+            <span>© {new Date().getFullYear()} <span className="font-logo normal-case text-brand-soft">Asdré</span> — Designed For Forever</span>
           </div>
         </FadeIn>
       </div>

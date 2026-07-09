@@ -314,7 +314,7 @@ function FinaleReveal({ p, u, isMobile }: { p: MotionValue<number>; u: number; i
       <div className="flex flex-col items-center gap-5">
         <motion.div style={{ opacity: logoOpacity, y: logoY }}>
           <FloatingObject amplitude={7} bobDuration={9} rotateDuration={0}>
-            <span className="font-logo text-[clamp(3rem,12vw,8rem)] tracking-normal text-[#fafaf9] [text-shadow:0_0_40px_rgba(99,102,241,0.35)]">
+            <span className="font-logo text-[clamp(3rem,12vw,8rem)] tracking-normal text-brand-soft [text-shadow:0_0_40px_rgba(99,102,241,0.35)]">
               {ABOUT.finale.logo}
             </span>
           </FloatingObject>
