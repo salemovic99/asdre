@@ -10,7 +10,7 @@ import {
   useTransform,
   type MotionValue,
 } from "framer-motion";
-import { ABOUT } from "@/lib/content";
+import { ABOUT, BRAND } from "@/lib/content";
 import { SPRING_SCROLL, SPRING_SOFT } from "@/lib/motion";
 import { useReducedMotionPref } from "@/hooks/useReducedMotionPref";
 import { useIsMobile } from "@/hooks/useIsMobile";
@@ -49,7 +49,7 @@ interface Beat {
 // Flat, constant-length beat list (stable hook order). Windows are fractions of u.
 const BEATS: Beat[] = [
   { variant: "title", text: "Who are we?", startK: 0.04, endK: 0.115 },
-  { variant: "wordmark", text: "ASDRÉ", startK: 0.115, endK: 0.2 },
+  { variant: "wordmark", text: BRAND.name, startK: 0.115, endK: 0.2 },
   { variant: "sentence", text: "Founded by", startK: 0.2, endK: 0.255 },
   { variant: "pair", left: "Saudi", right: "Egyptian", startK: 0.255, endK: 0.335 },
   { variant: "sentence", text: "They met while studying in Leysin.", startK: 0.335, endK: 0.405 },
@@ -77,8 +77,9 @@ const BIG_CLS =
   "font-serif font-semibold tracking-tight leading-none text-[clamp(2.75rem,11vw,8.5rem)]";
 const PAIR_CLS =
   "font-serif font-semibold tracking-tight leading-none text-[clamp(2.5rem,9vw,7rem)] text-[#fafaf9]";
+// The brand mark itself — logo face, matching the finale wordmark.
 const WORDMARK_CLS =
-  "font-serif tracking-[0.14em] leading-none text-[clamp(3rem,13vw,9.5rem)] text-[#fafaf9]";
+  "font-logo tracking-normal leading-none text-[clamp(3rem,13vw,9.5rem)] text-brand-soft";
 
 // Per-variant fly-through keyframes (Z in px; scale/opacity/blur curves).
 function sceneKeys(variant: Variant) {
