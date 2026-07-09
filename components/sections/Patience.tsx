@@ -13,6 +13,7 @@ import { PATIENCE } from "@/lib/content";
 import { SPRING_SCROLL } from "@/lib/motion";
 import { FadeIn } from "@/components/motion/FadeIn";
 import { ParticleField } from "@/components/visual/Shapes";
+import { ThreadConnector } from "@/components/visual/ThreadConnector";
 import { useReducedMotionPref } from "@/hooks/useReducedMotionPref";
 import { useIsMobile } from "@/hooks/useIsMobile";
 
@@ -340,6 +341,12 @@ export function Patience() {
           <ParticleField count={isMobile ? 22 : 40} />
         </motion.div>
       </div>
+
+      {/* The thread lives OUTSIDE the sticky child, as Hero's portal overlays do,
+          so position:fixed stays glued to the viewport through the unpin and the
+          panel's overflow-hidden cannot clip it. It fills the 100vh strip the
+          unpin would otherwise spend on flat dark. */}
+      <ThreadConnector p={p} u={u} />
     </section>
   );
 }

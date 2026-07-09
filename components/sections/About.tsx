@@ -48,7 +48,9 @@ interface Beat {
 
 // Flat, constant-length beat list (stable hook order). Windows are fractions of u.
 const BEATS: Beat[] = [
-  { variant: "title", text: "Who are we?", startK: 0.04, endK: 0.115 },
+  // Opens almost immediately: the thread's bloom hands straight into this beat,
+  // so there is no dark lead-in to sit through. The wider window reads slower.
+  { variant: "title", text: "Who are we?", startK: 0.012, endK: 0.115, overlap: 0.02 },
   { variant: "wordmark", text: BRAND.name, startK: 0.115, endK: 0.2 },
   { variant: "sentence", text: "Founded by", startK: 0.2, endK: 0.255 },
   { variant: "pair", left: "Saudi", right: "Egyptian", startK: 0.255, endK: 0.335 },
@@ -180,10 +182,10 @@ function Scene({ p, start, end, variant, text, left, right, accent, dark, isMobi
 function EnvStarfield({ p, u, isMobile }: { p: MotionValue<number>; u: number; isMobile: boolean }) {
   const farZ = useTransform(p, [0, u], [-200, 900]);
   const farS = useTransform(p, [0, u], [1, 2.2]);
-  const farO = useTransform(p, [0, 0.04 * u, 0.9 * u, u], [0, 0.5, 0.5, 0.35]);
+  const farO = useTransform(p, [0, 0.02 * u, 0.9 * u, u], [0, 0.5, 0.5, 0.35]);
   const nearZ = useTransform(p, [0, u], [0, 1500]);
   const nearS = useTransform(p, [0, u], [1.3, 3.6]);
-  const nearO = useTransform(p, [0, 0.04 * u, 0.85 * u, u], [0, 0.7, 0.7, 0]);
+  const nearO = useTransform(p, [0, 0.02 * u, 0.85 * u, u], [0, 0.7, 0.7, 0]);
 
   const farStyle = isMobile
     ? { scale: farS, opacity: farO }
