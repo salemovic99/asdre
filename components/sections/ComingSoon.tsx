@@ -122,7 +122,7 @@ export function ComingSoon() {
             as="h2"
             text={COMING_SOON.headline}
             stagger={0.06}
-            className="font-serif text-4xl font-medium leading-[1.1] tracking-tight text-white sm:text-6xl lg:text-7xl"
+            className="font-serif text-4xl font-medium leading-[1.1] tracking-tight text-primary sm:text-6xl lg:text-7xl"
           />
         </motion.div>
         <span id="coming-soon-heading" className="sr-only">
@@ -151,7 +151,7 @@ export function ComingSoon() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={VIEWPORT_ONCE}
               transition={{ duration: 0.9, delay: i * 0.12, ease: EASE_LUX }}
-              className="text-sm leading-relaxed text-white/55 sm:text-base"
+              className="text-sm leading-relaxed text-secondary sm:text-base"
             >
               {para}
             </motion.p>
