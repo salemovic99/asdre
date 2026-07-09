@@ -132,6 +132,16 @@
   text-wrap: balance;
 }
 
+/* Wine gradient fill for display copy. Must sit on the element whose own
+   opacity is animated — a parent-level gradient cannot be faded by a child,
+   because the parent is what paints the background behind the glyphs. */
+@utility brand-gradient-text {
+  background-image: linear-gradient(to right, var(--brand), var(--brand-soft));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
 /* Fixed dot-grid background (paired with BackgroundDots component).
    Wine dots at low alpha so the grid reads as texture, not pattern. */
 @utility dot-grid {

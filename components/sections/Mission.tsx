@@ -64,7 +64,8 @@ export function Mission() {
           as="h2"
           text={MISSION.statement}
           stagger={0.045}
-          className="max-w-3xl font-serif text-[1.75rem] font-medium leading-[1.15] tracking-tight text-foreground sm:text-4xl lg:text-5xl"
+          className="max-w-3xl font-serif text-[1.75rem] font-medium leading-[1.15] tracking-tight sm:text-4xl lg:text-5xl"
+          tokenClassName="brand-gradient-text"
         />
         <span id="mission-heading" className="sr-only">
           Mission

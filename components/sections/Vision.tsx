@@ -26,8 +26,8 @@ export function Vision() {
           as="h2"
           text={VISION.statement}
           stagger={0.05}
-          className="font-serif text-3xl font-medium leading-[1.1] tracking-tight text-foreground sm:text-5xl lg:text-6xl"
-          tokenClassName=""
+          className="font-serif text-3xl font-medium leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl"
+          tokenClassName="brand-gradient-text"
         />
         <span id="vision-heading" className="sr-only">
           Vision

@@ -14,19 +14,16 @@ import { Reveal } from "@/components/motion/Reveal";
 import { FadeIn } from "@/components/motion/FadeIn";
 import { useReducedMotionPref } from "@/hooks/useReducedMotionPref";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { cn } from "@/lib/utils";
 
 /**
  * Values — a content-first "word-illumination" scrub. The statement sits still
  * and perfectly legible; as the section scrolls, the body sentence lights up
- * one word at a time — muted gray → full ink — beneath a clean serif title, with
- * key words ("considered", "feel", "name") glowing wine as they land. A thin
+ * one word at a time — pale → full wine gradient — beneath a clean serif title,
+ * with key words ("considered", "feel", "name") set heavier as they land. A thin
  * rail tracks the reveal. Modern, editorial, always readable. Fully scroll-driven
  * and reversible; degrades to a static, fully-lit layout under reduced motion.
  */
-
-const BRAND = "#a54052";
-const DIM = "#d6d3d1"; // unlit gray (border token)
-const INK = "#0c0a09"; // lit foreground
 
 // Reveal band across the runway — lead-in before, hold after.
 const BAND_START = 0.12;
@@ -53,10 +50,14 @@ function Word({
   const start = BAND_START + index * slice;
   const end = start + slice * 1.8; // overlap neighbours for a smooth sweep
   const t = useTransform(p, [start, end], [0, 1]);
-  const color = useTransform(t, [0, 1], accent ? [DIM, BRAND] : [DIM, INK]);
-  const opacity = useTransform(t, [0, 1], [0.55, 1]);
+  // Opacity alone carries the sweep: the gradient lives on this span, so a
+  // parent-level fill could not be faded per-word.
+  const opacity = useTransform(t, [0, 1], [0.3, 1]);
   return (
-    <motion.span style={{ color, opacity }} className="inline-block">
+    <motion.span
+      style={{ opacity }}
+      className={cn("inline-block brand-gradient-text", accent && "font-semibold")}
+    >
       {word}
       {index < total - 1 ? " " : ""}
     </motion.span>
@@ -89,13 +90,16 @@ function StaticValues() {
         </span>
         <h2
           id="values-heading"
-          className="font-serif text-[clamp(2rem,6vw,3.5rem)] font-medium tracking-tight text-foreground"
+          className="brand-gradient-text font-serif text-[clamp(2rem,6vw,3.5rem)] font-medium tracking-tight"
         >
           {VALUES.value.title}
         </h2>
         <p className="mt-8 max-w-2xl font-serif text-[clamp(1.4rem,4vw,2.4rem)] leading-[1.4] tracking-tight">
           {words.map((w, i) => (
-            <span key={`${w}-${i}`} style={{ color: ACCENTS.has(clean(w)) ? BRAND : INK }}>
+            <span
+              key={`${w}-${i}`}
+              className={cn("brand-gradient-text", ACCENTS.has(clean(w)) && "font-semibold")}
+            >
               {w}
               {i < words.length - 1 ? " " : ""}
             </span>
@@ -140,7 +144,8 @@ export function Values() {
             as="h2"
             text={VALUES.value.title}
             stagger={0.05}
-            className="font-serif text-[clamp(2rem,6vw,3.5rem)] font-medium tracking-tight text-foreground"
+            className="font-serif text-[clamp(2rem,6vw,3.5rem)] font-medium tracking-tight"
+            tokenClassName="brand-gradient-text"
           />
           <span id="values-heading" className="sr-only">
             Values

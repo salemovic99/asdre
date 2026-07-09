@@ -40,7 +40,8 @@ export function Reveal({
   const { reduced } = useReducedMotionPref();
 
   if (reduced) {
-    return createElement(as, { className }, text);
+    // Wrap so per-token styling (e.g. gradient fill) survives the static path.
+    return createElement(as, { className }, <span className={tokenClassName}>{text}</span>);
   }
 
   const tokens = splitBy === "char" ? Array.from(text) : text.split(" ");
