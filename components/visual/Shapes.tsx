@@ -120,11 +120,24 @@ export function Sculpture({
 }
 
 /**
- * Coming Soon — soft floating particles on a dark field. Positions are
- * deterministic (index-derived) to avoid hydration mismatch. Motion is applied
- * by the parent via FloatingObject / CSS; these are the static marks.
+ * Soft floating particles. Positions are deterministic (index-derived) to avoid
+ * hydration mismatch. Motion is applied by the parent via FloatingObject / CSS;
+ * these are the static marks.
+ *
+ * `tone` picks the field the dots have to survive on: "light" is the original
+ * white-on-dark (About, Patience); "warm" is wine-on-warm-white, where a glow
+ * would be invisible and has to become a soft halo instead.
  */
-export function ParticleField({ count = 42, className }: { count?: number; className?: string }) {
+export function ParticleField({
+  count = 42,
+  tone = "light",
+  className,
+}: {
+  count?: number;
+  tone?: "light" | "warm";
+  className?: string;
+}) {
+  const warm = tone === "warm";
   const dots = Array.from({ length: count }, (_, i) => {
     // deterministic pseudo-scatter
     const x = (i * 61.803) % 100;
@@ -138,18 +151,94 @@ export function ParticleField({ count = 42, className }: { count?: number; class
       {dots.map((d) => (
         <span
           key={d.key}
-          className="absolute rounded-full bg-white"
+          className={cn("absolute rounded-full", warm ? "bg-[#a54052]" : "bg-white")}
           style={{
             left: `${d.x}%`,
             top: `${d.y}%`,
             width: `${d.size}px`,
             height: `${d.size}px`,
-            opacity: d.opacity,
-            boxShadow: "0 0 6px rgba(255,255,255,0.6)",
+            opacity: warm ? d.opacity + 0.18 : d.opacity,
+            boxShadow: warm
+              ? "0 0 6px rgba(165,64,82,0.35)"
+              : "0 0 6px rgba(255,255,255,0.6)",
           }}
         />
       ))}
     </div>
+  );
+}
+
+/** The two bulb outlines, shared by the glass and by the sand's static clip. */
+export const HOURGLASS_TOP_BULB = "M34 26 L166 26 C166 82 118 122 104 146 L96 146 C82 122 34 82 34 26 Z";
+export const HOURGLASS_BOTTOM_BULB = "M34 274 L166 274 C166 218 118 178 104 154 L96 154 C82 178 34 218 34 274 Z";
+
+/**
+ * The hourglass vessel — front-facing, and never rotated: an hourglass is a body
+ * of revolution, so spinning it about its axis would not change this silhouette.
+ * The 3D read is carried by the orbiting posts and caps around it.
+ *
+ * On the warm-white room, glass cannot be sold with rim *light* the way it is on
+ * a dark field. It is sold with shadow instead: contact darkening at the edges,
+ * an inner shadow, a grounding drop shadow, and a wine caustic under the neck.
+ * The only pure white is the moving specular, which the section paints on top.
+ *
+ * The bulbs are deliberately low-alpha so the sand behind and the far posts read
+ * through the glass.
+ */
+export function HourglassGlass({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 200 300" className={cn("h-full w-full", className)} aria-hidden="true">
+      <defs>
+        {/* Barely-there body: a vertical value shift, not a glow. */}
+        <linearGradient id="hg-body" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#ffffff" stopOpacity="0.55" />
+          <stop offset="0.35" stopColor="#f2f0ee" stopOpacity="0.34" />
+          <stop offset="0.65" stopColor="#e9e6e3" stopOpacity="0.30" />
+          <stop offset="1" stopColor="#ffffff" stopOpacity="0.5" />
+        </linearGradient>
+        {/* Refraction hint — a brighter core band sells a cylinder. */}
+        <linearGradient id="hg-refract" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#ffffff" stopOpacity="0" />
+          <stop offset="0.48" stopColor="#ffffff" stopOpacity="0.5" />
+          <stop offset="1" stopColor="#ffffff" stopOpacity="0" />
+        </linearGradient>
+        <radialGradient id="hg-caustic" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stopColor="#a54052" stopOpacity="0.18" />
+          <stop offset="1" stopColor="#a54052" stopOpacity="0" />
+        </radialGradient>
+        <filter id="hg-ground" x="-40%" y="-20%" width="180%" height="150%">
+          <feDropShadow dx="0" dy="26" stdDeviation="22" floodColor="#1c1917" floodOpacity="0.20" />
+        </filter>
+      </defs>
+
+      <g filter="url(#hg-ground)">
+        {[HOURGLASS_TOP_BULB, HOURGLASS_BOTTOM_BULB].map((d, i) => (
+          <g key={i}>
+            <path d={d} fill="url(#hg-body)" />
+            <path d={d} fill="url(#hg-refract)" opacity="0.35" />
+            {/* Contact darkening: the edge is what grounds glass on white. */}
+            <path d={d} fill="none" stroke="#0c0a09" strokeOpacity="0.14" strokeWidth="1.6" />
+          </g>
+        ))}
+
+        {/* wine caustic pooling under the neck */}
+        <ellipse cx="100" cy="164" rx="34" ry="16" fill="url(#hg-caustic)" />
+
+        {/* neck collar */}
+        <rect x="92" y="145" width="16" height="10" rx="2" fill="#ffffff" fillOpacity="0.5" />
+        <rect
+          x="92"
+          y="145"
+          width="16"
+          height="10"
+          rx="2"
+          fill="none"
+          stroke="#0c0a09"
+          strokeOpacity="0.16"
+          strokeWidth="1.2"
+        />
+      </g>
+    </svg>
   );
 }
 

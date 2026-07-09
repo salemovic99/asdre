@@ -5,6 +5,7 @@ import { ChapterNav } from "@/components/navigation/ChapterNav";
 import { ChapterProgress } from "@/components/navigation/ChapterProgress";
 import { ScrollProgress } from "@/components/motion/ScrollProgress";
 import { Hero } from "@/components/sections/Hero";
+import { Hourglass } from "@/components/sections/Hourglass";
 import { Patience } from "@/components/sections/Patience";
 import { About } from "@/components/sections/About";
 import { Vision } from "@/components/sections/Vision";
@@ -30,6 +31,7 @@ export function StoryExperience() {
 
       <main id="story" className="relative">
         <Hero />
+        <Hourglass />
         <Patience />
         <About />
         <Vision />
