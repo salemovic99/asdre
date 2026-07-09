@@ -36,9 +36,11 @@ const EDGE_LIT = "brightness(1.18) drop-shadow(0 0 22px rgba(79,70,229,0.45))";
 const REST_LIT = "brightness(1) drop-shadow(0 10px 26px rgba(28,25,23,0.18))";
 const FILTER_TIMES = [0, 0.55, 1];
 
-// `Array.from` keeps the accented É (a single code point) intact → A S D R É.
+// `Array.from` keeps the accented é (a single code point) intact → A s d r é.
 const LETTERS = Array.from(BRAND.name);
-const D_INDEX = LETTERS.indexOf("D"); // the portal letter
+// The portal letter. Matched case-insensitively so the wordmark's casing can
+// change without silently returning -1 and disabling the portal.
+const D_INDEX = LETTERS.findIndex((c) => c.toLowerCase() === "d");
 // Outward drift for the non-D letters as they streak past the camera.
 const SIBLING_X = [-140, -70, 0, 70, 140];
 
@@ -132,7 +134,7 @@ export function LogoReveal({ reduced = false, isMobile = false, flyProgress }: L
   const fp = flyProgress ?? zero;
 
   return (
-    <h1 className="font-logo text-[clamp(4rem,18vw,15rem)] font-medium leading-[0.95] tracking-normal text-foreground">
+    <h1 className="font-logo text-[clamp(3rem,13vw,11rem)] font-medium leading-[0.95] tracking-normal text-foreground">
       {/* Read as one word by assistive tech; the flipping glyphs are decorative. */}
       <span className="sr-only">{BRAND.name}</span>
 

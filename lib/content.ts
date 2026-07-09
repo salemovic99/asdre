@@ -4,7 +4,7 @@
  */
 
 export const BRAND = {
-  name: "ASDRÉ",
+  name: "Asdré",
   tagline: "Made For You",
   heroHeadline: "Designed For Forever.",
   heroSubtitle: "Quiet Luxury Inspired by Switzerland.",
@@ -23,7 +23,7 @@ export const ABOUT = {
   a11yStory:
     "ASDRÉ was founded by a Saudi and an Egyptian student who met while studying in Leysin, in the heart of the Swiss Alps. Inspired by Swiss design, timeless style, and exceptional quality, they set out to bring quiet luxury into everyday life. We believe true luxury isn’t defined by loud logos or passing trends. It is defined by timeless design, lasting comfort, and pieces you’ll wear forever. When someone hears ASDRÉ, we want them to picture a feeling — calm, refined, and considered. A brand where quality is felt before it is seen.",
   finale: {
-    logo: "ASDRÉ",
+    logo: "Asdré",
     line: "A brand where quality is felt before it is seen.",
     cards: [
       { name: "LÉMAN", subtitle: "Refined everyday essentials.", from: "left" },
