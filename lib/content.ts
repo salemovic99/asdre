@@ -4,7 +4,7 @@
  */
 
 export const BRAND = {
-  name: "Asdré",
+  name: "ASdré",
   tagline: "Made For You",
   heroHeadline: "Designed For Forever.",
   heroSubtitle: "Quiet Luxury Inspired by Switzerland.",
