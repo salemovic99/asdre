@@ -177,7 +177,8 @@ export function Hero() {
           position:fixed stays glued to the viewport through the sticky unpin.
           The wine bloom flares as the camera nears the aperture; the white
           seam (#fafaf9) blooms to full over the unpin, then dissolves to reveal
-          About rising from pure white. */}
+          Patience rising from pure white — it opens on the same #fafaf9 before
+          darkening into About's deep space. */}
       {!reduced && (
         <>
           <motion.div

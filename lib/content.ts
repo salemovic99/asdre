@@ -39,6 +39,17 @@ export const VISION = {
     "To become a global quiet-luxury brand that people build their entire wardrobe around.",
 } as const;
 
+/**
+ * The held breath between the hero dive and the founding story. Not a
+ * "coming soon" page — a moment of stillness that earns the wait.
+ */
+export const PATIENCE = {
+  heading: "A note on patience",
+  line1: "Every timeless masterpiece begins with patience.",
+  line2:
+    "ASDRÉ is currently crafting every detail with care. True luxury cannot be rushed.",
+} as const;
+
 export const MISSION = {
   eyebrow: "Mission",
   question: "Why were we created?",

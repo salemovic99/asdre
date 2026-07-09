@@ -5,6 +5,7 @@ import { ChapterNav } from "@/components/navigation/ChapterNav";
 import { ChapterProgress } from "@/components/navigation/ChapterProgress";
 import { ScrollProgress } from "@/components/motion/ScrollProgress";
 import { Hero } from "@/components/sections/Hero";
+import { Patience } from "@/components/sections/Patience";
 import { About } from "@/components/sections/About";
 import { Vision } from "@/components/sections/Vision";
 import { Mission } from "@/components/sections/Mission";
@@ -15,7 +16,9 @@ import { Contact } from "@/components/sections/Contact";
 
 /**
  * The single client tree for the entire ASDRÉ experience: the fixed dot-grid
- * background, fixed wayfinding, and the eight story chapters in scroll order.
+ * background, fixed wayfinding, and the eight story chapters in scroll order —
+ * plus Patience, an unlisted interstitial that carries the hero's white flash
+ * down into About's dark space.
  */
 export function StoryExperience() {
   return (
@@ -27,6 +30,7 @@ export function StoryExperience() {
 
       <main id="story" className="relative">
         <Hero />
+        <Patience />
         <About />
         <Vision />
         <Mission />
