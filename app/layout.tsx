@@ -67,6 +67,13 @@ export default function RootLayout({
       lang="en"
       className={`${robotoMono.variable} ${inter.variable} ${jetbrains.variable} h-full`}
     >
+      <head>
+        {/* Brittany Signature (logo only) — not on Google Fonts, loaded via CDN. */}
+        <link
+          rel="stylesheet"
+          href="https://fonts.cdnfonts.com/css/brittany-signature"
+        />
+      </head>
       <body className="relative min-h-full bg-background text-foreground">
         <a
           href="#about"

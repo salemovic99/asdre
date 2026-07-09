@@ -38,6 +38,9 @@
   --font-serif: var(--font-roboto-mono);
   --font-heading: var(--font-roboto-mono);
   --font-mono: var(--font-jetbrains);
+  /* Logo only — Brittany Signature loaded via CDN in app/layout.tsx.
+     Fallback chain covers glyphs the script face may lack (e.g. É). */
+  --font-logo: "Brittany Signature", var(--font-serif), cursive;
 
   /* Radii (luxury soft) */
   --radius-sm: calc(var(--radius) * 0.6);
