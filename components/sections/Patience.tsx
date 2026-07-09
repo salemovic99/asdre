@@ -1,7 +1,14 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useScroll, useSpring, useTransform } from "framer-motion";
+import {
+  motion,
+  useScroll,
+  useSpring,
+  useTransform,
+  useMotionTemplate,
+  type MotionValue,
+} from "framer-motion";
 import { PATIENCE } from "@/lib/content";
 import { SPRING_SCROLL } from "@/lib/motion";
 import { FadeIn } from "@/components/motion/FadeIn";
@@ -12,22 +19,126 @@ import { useIsMobile } from "@/hooks/useIsMobile";
 /**
  * Patience — the held breath between the hero dive and the founding story.
  *
- * The room opens in the hero's warm white (its portal flash lands here, seamless),
- * holds one line, then darkens to the deep space About lives in while particles
- * and an ambient wine light rise. A long, motionless beat lets the second line
- * sit before the story begins.
+ * A dark iris opens from behind the type and swallows the warm-white room; the
+ * second line is revealed inside it. The wipe rhymes with the hero's dive
+ * through the counter of the D, and carries the hero's white flash down into
+ * About's deep space.
  *
- * Colour is never animated. The section's own background is permanently dark and
- * a childless white overlay fades out over it — so the darken is a compositor-only
- * opacity crossfade, and the area revealed as the sticky panel unpins is already
- * dark. Animating `backgroundColor` instead would repaint every frame and flash
- * white at the seam, where the fixed #fafaf9 dot-grid shows through.
+ * Two rules hold this together:
+ *
+ * 1. Colour is never animated. The section's own background is permanently dark,
+ *    so the strip revealed as the sticky panel unpins is already dark — no white
+ *    flash at the seam into About, where the fixed #fafaf9 dot-grid sits behind.
+ *
+ * 2. `clip-path` is NOT compositor-accelerated — it repaints on the main thread
+ *    every frame. So only cheap layers are clipped: a flat colour fill and a text
+ *    layer. The blurred glow and the box-shadowed particles are never clipped;
+ *    they fade in on `opacity` once the iris has already covered the viewport.
  */
 
-const LINE_CLS =
-  "max-w-[22ch] font-serif text-[clamp(1.6rem,5vw,3.25rem)] font-medium leading-[1.25] tracking-tight text-balance-pretty sm:max-w-[26ch]";
+// Worst case (a square viewport) needs √2/2 ≈ 70.71vmax to reach the corners.
+// `circle()` has no farthest-corner keyword, so the length is explicit. 80
+// leaves margin for iOS's URL-bar viewport wobble.
+const IRIS_MAX_VMAX = 80;
 
-// ── Reduced motion: no pin, no scrub. The end state, stated plainly.
+const LINE_CLS =
+  "max-w-[22ch] font-serif text-[clamp(1.6rem,5vw,3.25rem)] font-medium leading-[1.25] tracking-tight sm:max-w-[26ch]";
+
+// ── One word rising from behind a clip mask as the scrub passes over it.
+function ScrubWord({
+  p,
+  word,
+  index,
+  total,
+  start,
+  end,
+}: {
+  p: MotionValue<number>;
+  word: string;
+  index: number;
+  total: number;
+  start: number;
+  end: number;
+}) {
+  const slice = (end - start) / total;
+  const wStart = start + index * slice;
+  const wEnd = wStart + slice * 2.2; // overlap neighbours into a continuous sweep
+  const y = useTransform(p, [wStart, wEnd], ["110%", "0%"]);
+  const opacity = useTransform(p, [wStart, wEnd], [0, 1]);
+
+  return (
+    <span className="inline-block overflow-hidden pb-[0.14em] -mb-[0.14em]">
+      <motion.span
+        style={{ y, opacity, willChange: "transform" }}
+        className="inline-block"
+      >
+        {word}
+      </motion.span>
+    </span>
+  );
+}
+
+// ── A line: per-word rise in, then a line-level hold and exit.
+function ScrubLine({
+  p,
+  text,
+  band,
+  hold,
+  className,
+}: {
+  p: MotionValue<number>;
+  text: string;
+  /** [start, end] of the per-word rise. */
+  band: [number, number];
+  /** [holdEnd, gone] — the line fades and drifts out across this window. */
+  hold: [number, number];
+  className: string;
+}) {
+  const opacity = useTransform(p, [hold[0], hold[1]], [1, 0]);
+  const y = useTransform(p, [hold[0], hold[1]], [0, -24]);
+  const words = text.split(" ");
+
+  return (
+    <motion.p
+      aria-label={text}
+      style={{ opacity, y, willChange: "transform" }}
+      className={className}
+    >
+      {/* Tokens are decorative; the full sentence is on the aria-label. */}
+      <span
+        aria-hidden="true"
+        className="inline-flex flex-wrap justify-center gap-x-[0.28em] pb-[0.14em] -mb-[0.14em]"
+      >
+        {words.map((w, i) => (
+          <ScrubWord
+            key={`${w}-${i}`}
+            p={p}
+            word={w}
+            index={i}
+            total={words.length}
+            start={band[0]}
+            end={band[1]}
+          />
+        ))}
+      </span>
+    </motion.p>
+  );
+}
+
+// ── The mono eyebrow, flanked by hairlines. The section's graphic anchor.
+function Eyebrow({ className }: { className?: string }) {
+  return (
+    <span className={`flex items-center gap-4 ${className ?? ""}`}>
+      <span aria-hidden="true" className="h-px w-8 bg-brand/40 sm:w-12" />
+      <span className="font-mono text-xs uppercase tracking-[0.5em] text-brand">
+        {PATIENCE.eyebrow}
+      </span>
+      <span aria-hidden="true" className="h-px w-8 bg-brand/40 sm:w-12" />
+    </span>
+  );
+}
+
+// ── Reduced motion: no pin, no scrub, no iris. The end state, stated plainly.
 function StaticPatience() {
   return (
     <section
@@ -45,6 +156,10 @@ function StaticPatience() {
 
       <div className="relative z-10 flex flex-col items-center gap-10">
         <FadeIn>
+          <Eyebrow />
+        </FadeIn>
+
+        <FadeIn delay={0.1}>
           <p className={`${LINE_CLS} text-[#fafaf9]`}>{PATIENCE.line1}</p>
         </FadeIn>
 
@@ -53,7 +168,7 @@ function StaticPatience() {
           className="h-px w-24 bg-gradient-to-r from-transparent via-[#c25a6d]/70 to-transparent"
         />
 
-        <FadeIn delay={0.15}>
+        <FadeIn delay={0.2}>
           <p className={`${LINE_CLS} text-[#fafaf9]/70`}>{PATIENCE.line2}</p>
         </FadeIn>
       </div>
@@ -73,28 +188,28 @@ export function Patience() {
   const p = useSpring(scrollYProgress, SPRING_SCROLL);
 
   const track = isMobile ? 220 : 260;
-  // The sticky panel releases here; every beat is a fraction of it so the
-  // choreography always finishes before the handoff, whatever the track height.
+  // The sticky panel releases here; every beat is a fraction of it, so the
+  // choreography always lands before the handoff whatever the track height.
   const u = (track - 100) / track;
   const k = (n: number) => n * u;
 
-  // The room darkens. Fully dark by 0.62u — well ahead of the unpin, so the
-  // spring's lag can never expose a light frame at the seam into About.
-  const whiteOpacity = useTransform(p, [k(0.18), k(0.62)], [1, 0]);
+  const eyebrowOpacity = useTransform(p, [k(0.02), k(0.1), k(0.22), k(0.3)], [0, 1, 1, 0]);
+  const eyebrowY = useTransform(p, [k(0.02), k(0.1)], [14, 0]);
 
-  // Line 1 lives in the light. It is gone before the room turns.
-  const line1Opacity = useTransform(p, [k(0.04), k(0.14), k(0.3), k(0.4)], [0, 1, 1, 0]);
-  const line1Y = useTransform(p, [k(0.04), k(0.14), k(0.3), k(0.42)], [24, 0, 0, -28]);
+  // The aperture. Line 1 must be gone by k(0.40) — the iris eats the centre first.
+  const r = useTransform(p, [k(0.4), k(0.58), k(0.7)], [0, 34, IRIS_MAX_VMAX]);
+  const iris = useMotionTemplate`circle(${r}vmax at 50% 50%)`;
 
-  // Line 2 lives in the dark, and holds — the pause the chapter is named for.
-  const line2Opacity = useTransform(p, [k(0.52), k(0.64), k(0.9), k(0.99)], [0, 1, 1, 0]);
-  const line2Y = useTransform(p, [k(0.52), k(0.64), k(0.9), k(1)], [20, 0, 0, -16]);
+  // A wine flare at the moment the aperture breaks open.
+  const flareOpacity = useTransform(p, [k(0.38), k(0.42), k(0.48)], [0, 0.9, 0]);
+  const flareScale = useTransform(p, [k(0.38), k(0.48)], [0.6, 1.15]);
 
-  const particleOpacity = useTransform(p, [k(0.4), k(0.62), k(0.9), k(1)], [0, 1, 1, 0]);
-  const particleY = useTransform(p, [0, k(1)], [0, -40]);
-
-  const glowOpacity = useTransform(p, [k(0.36), k(0.6), k(0.9), k(1)], [0, 0.85, 0.85, 0]);
-  const glowScale = useTransform(p, [k(0.36), k(0.85)], [0.7, 1.1]);
+  // Unclipped, composited. Both wait until the iris has covered the corners,
+  // so neither is ever seen against the white room.
+  const glowOpacity = useTransform(p, [k(0.62), k(0.76), k(0.92), k(1)], [0, 0.85, 0.85, 0]);
+  const glowScale = useTransform(p, [k(0.62), k(0.95)], [0.7, 1.12]);
+  const particleOpacity = useTransform(p, [k(0.66), k(0.8), k(0.92), k(1)], [0, 1, 1, 0]);
+  const particleY = useTransform(p, [k(0.4), k(1)], [0, -40]);
 
   if (reduced) return <StaticPatience />;
 
@@ -106,51 +221,90 @@ export function Patience() {
       // Dark base: what shows through as the sticky child slides away.
       className={`relative w-full bg-[#0c0a09] ${isMobile ? "h-[220vh]" : "h-[260vh]"}`}
     >
-      <div className="sticky top-0 flex h-screen w-full items-center justify-center overflow-hidden px-6 sm:px-10">
-        {/* The warm-white room, dissolving. Childless, so no glyph ever repaints. */}
+      <div className="sticky top-0 h-screen w-full overflow-hidden">
+        <h2 id="patience-heading" className="sr-only">
+          {PATIENCE.heading}
+        </h2>
+
+        {/* z-5 — the warm-white room. Static fill; the iris does all the work. */}
+        <div aria-hidden="true" className="absolute inset-0 z-[5] bg-[#fafaf9]">
+          {/* dot-grid carries its own mask, so it lives on a child, never on a
+              clipped or masked element — masks don't stack. */}
+          <div className="dot-grid pointer-events-none absolute inset-0" />
+        </div>
+
+        <div className="absolute inset-0 z-[5] flex flex-col items-center justify-center gap-10 px-6 text-center sm:px-10">
+          <motion.div style={{ opacity: eyebrowOpacity, y: eyebrowY }}>
+            <Eyebrow />
+          </motion.div>
+
+          <ScrubLine
+            p={p}
+            text={PATIENCE.line1}
+            band={[k(0.06), k(0.22)]}
+            hold={[k(0.3), k(0.4)]}
+            className={`${LINE_CLS} text-foreground`}
+          />
+        </div>
+
+        {/* z-6 — the iris. A flat fill and nothing else: the only thing that
+            repaints per frame. Positioned, because clip-path makes a stacking
+            context but not a containing block. */}
         <motion.div
           aria-hidden="true"
-          style={{ opacity: whiteOpacity, willChange: "opacity" }}
-          className="pointer-events-none absolute inset-0 z-[5] bg-[#fafaf9]"
+          style={{ clipPath: iris, WebkitClipPath: iris, willChange: "clip-path" }}
+          className="pointer-events-none absolute inset-0 z-[6] bg-[#0c0a09]"
         />
 
-        {/* Ambient wine light, rising with the dark. */}
+        {/* The flare, riding the aperture edge as it breaks open. Centring comes
+            from framer's x/y — a Tailwind -translate-* would be overwritten by
+            the inline transform that `scale` generates. */}
         <motion.div
           aria-hidden="true"
-          style={{ opacity: glowOpacity, scale: glowScale, willChange: "opacity, transform" }}
-          className="pointer-events-none absolute left-1/2 top-1/2 z-[6] size-[90vw] max-w-[1000px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(165,64,82,0.30),transparent_62%)] blur-3xl"
+          style={{
+            opacity: flareOpacity,
+            scale: flareScale,
+            x: "-50%",
+            y: "-50%",
+            willChange: "opacity, transform",
+          }}
+          className="pointer-events-none absolute left-1/2 top-1/2 z-[6] size-[70vw] max-w-[760px] rounded-full bg-[radial-gradient(circle,rgba(194,90,109,0.55),transparent_62%)] blur-2xl"
+        />
+
+        {/* z-7 — line 2, clipped to the same aperture, so the iris reveals it. */}
+        <motion.div
+          style={{ clipPath: iris, WebkitClipPath: iris, willChange: "clip-path" }}
+          className="absolute inset-0 z-[7] flex items-center justify-center px-6 text-center sm:px-10"
+        >
+          <ScrubLine
+            p={p}
+            text={PATIENCE.line2}
+            band={[k(0.5), k(0.74)]}
+            hold={[k(0.92), k(1)]}
+            className={`${LINE_CLS} text-[#fafaf9]`}
+          />
+        </motion.div>
+
+        {/* z-8 — unclipped and composited. Only arrives once the room is dark. */}
+        <motion.div
+          aria-hidden="true"
+          style={{
+            opacity: glowOpacity,
+            scale: glowScale,
+            x: "-50%",
+            y: "-50%",
+            willChange: "opacity, transform",
+          }}
+          className="pointer-events-none absolute left-1/2 top-1/2 z-[8] size-[90vw] max-w-[1000px] rounded-full bg-[radial-gradient(circle,rgba(165,64,82,0.30),transparent_62%)] blur-3xl"
         />
 
         <motion.div
           aria-hidden="true"
           style={{ opacity: particleOpacity, y: particleY, willChange: "opacity, transform" }}
-          className="pointer-events-none absolute inset-0 z-[6]"
+          className="pointer-events-none absolute inset-0 z-[8]"
         >
           <ParticleField count={isMobile ? 22 : 40} />
         </motion.div>
-
-        <h2 id="patience-heading" className="sr-only">
-          {PATIENCE.heading}
-        </h2>
-
-        {/* Both lines stay in the DOM and in the a11y tree — only opacity moves.
-            They share one grid cell so each is centred without absolute
-            positioning, which would collide with framer's `y` transform. */}
-        <div className="relative z-10 grid w-full max-w-3xl place-items-center text-center">
-          <motion.p
-            style={{ opacity: line1Opacity, y: line1Y, willChange: "opacity, transform" }}
-            className={`col-start-1 row-start-1 ${LINE_CLS} text-foreground`}
-          >
-            {PATIENCE.line1}
-          </motion.p>
-
-          <motion.p
-            style={{ opacity: line2Opacity, y: line2Y, willChange: "opacity, transform" }}
-            className={`col-start-1 row-start-1 ${LINE_CLS} text-[#fafaf9]`}
-          >
-            {PATIENCE.line2}
-          </motion.p>
-        </div>
       </div>
     </section>
   );

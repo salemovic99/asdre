@@ -44,6 +44,7 @@ export const VISION = {
  * "coming soon" page — a moment of stillness that earns the wait.
  */
 export const PATIENCE = {
+  eyebrow: "Interlude",
   heading: "A note on patience",
   line1: "Every timeless masterpiece begins with patience.",
   line2:
